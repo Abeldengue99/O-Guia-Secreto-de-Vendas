@@ -2413,20 +2413,7 @@
                         e.preventDefault();
                         launchConfetti();
                         downloadBase64PDF(result.pdfBase64, result.filename);
-
-                        setTimeout(() => {
-                            const selectedMethod = document.getElementById('tab-express').classList.contains('active-tab') ? 'Express' : 'PayPay';
-                            const text = encodeURIComponent(
-                                "Olá Abel Dengue!\n\n" +
-                                "Acabei de descarregar o eBook 'Como Fazer o Cliente Sentir que Precisa de Você' com marca d'água! 🎉\n\n" +
-                                "👤 Nome: " + name + "\n" +
-                                "🟢 WhatsApp: " + whatsapp + "\n" +
-                                "💳 Método de Pagamento: " + selectedMethod + "\n" +
-                                "🛡️ Chave de Acesso: " + result.token + "\n\n" +
-                                "Por favor, guarde na sua base de dados o meu comprovativo!"
-                            );
-                            window.open("https://wa.me/244931289088?text=" + text, '_blank');
-                        }, 1500);
+                        showToast('✅', 'Download iniciado! O seu registo foi guardado automaticamente.');
                     };
 
                     showToast('🎉', 'Comprovativo aprovado! Descarregue o seu livro.');
@@ -2550,6 +2537,8 @@
                     formData.append('name', name);
                     formData.append('whatsapp', whatsapp);
                     formData.append('receipt', file);
+                    const selectedMethod = document.getElementById('tab-express').classList.contains('active-tab') ? 'Express' : 'PayPay';
+                    formData.append('paymentMethod', selectedMethod);
 
                     // Animações visuais (fake) para experiência do utilizador
                     setTimeout(() => markStepSuccess(1, 25), 600);
@@ -2558,7 +2547,6 @@
                     // URL da API. Quando hospedar o seu backend (por exemplo no Render ou Vercel),
                     // basta garantir que o frontend aponta para a mesma raiz, ou colocar o URL completo aqui (ex: https://meu-backend.onrender.com/api/verify-receipt)
                     const apiUrl = 'https://o-guia-secreto-de-vendas-1.onrender.com/api/verify-receipt';
-
 
                     const response = await fetch(apiUrl, {
                         method: 'POST',
