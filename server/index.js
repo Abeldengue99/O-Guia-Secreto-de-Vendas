@@ -12,6 +12,9 @@ const sharp = require('sharp');
 const app = express();
 const port = process.env.PORT || 3000;
 
+// Configuração para o Render identificar o IP correto de cada usuário
+app.set('trust proxy', true);
+
 // ==================== CONFIGURAÇÃO ADMIN ====================
 const ADMIN_PASSWORD = '3A11199903052025';
 const PRICE_PER_SALE = 2490; // Preço em Kz
