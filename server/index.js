@@ -10,7 +10,11 @@ const crypto = require('crypto');
 const sharp = require('sharp');
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
+
+app.get('/', (req, res) => {
+    res.send('O cérebro da Inteligência Artificial está online e a funcionar! 🚀');
+});
 
 app.use(cors());
 app.use(express.json());
