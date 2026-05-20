@@ -10,6 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --gold: #D4AF37;
@@ -963,7 +964,9 @@
             <div class="charts-grid">
                 <div class="chart-card">
                     <div class="chart-title">📊 Vendas dos Últimos 7 Dias <span>(aprovadas vs rejeitadas)</span></div>
-                    <div class="bar-chart" id="bar-chart-7days"></div>
+                    <div class="chart-container-custom" style="height: 250px; width: 100%; position: relative;">
+                        <canvas id="bar-chart-7days"></canvas>
+                    </div>
                 </div>
                 <div class="chart-card">
                     <div class="chart-title">💳 Métodos de Pagamento</div>
@@ -973,6 +976,13 @@
 
             <!-- Sales Table -->
             <div class="table-section">
+                <div class="toolbar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 12px; flex-wrap: wrap; padding: 20px 24px 0;">
+                    <div class="search-bar" style="flex: 1; min-width: 250px; position: relative;">
+                        <span style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%);">🔍</span>
+                        <input type="text" id="search-input" placeholder="Pesquisar por nome, whatsapp, token..." onkeyup="handleSearch()" style="width: 100%; padding: 10px 16px 10px 40px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: rgba(255, 255, 255, 0.04); color: var(--text-primary); font-family: inherit; font-size: 0.85rem; outline: none; transition: var(--transition);">
+                    </div>
+                    <button onclick="exportToCSV()" style="padding: 10px 16px; border-radius: var(--radius-sm); background: rgba(68, 138, 255, 0.15); color: var(--blue); border: 1px solid rgba(68, 138, 255, 0.3); cursor: pointer; font-family: inherit; font-weight: 600; font-size: 0.82rem; display: flex; align-items: center; gap: 8px;">📥 Exportar CSV</button>
+                </div>
                 <div class="table-header">
                     <div class="table-title">
                         📋 Registo de Vendas <span class="table-count" id="table-count">0</span>
@@ -985,10 +995,15 @@
                         <button class="filter-tab" data-filter="aprovado_manual" onclick="filterSales('aprovado_manual', this)">Manual</button>
                     </div>
                 </div>
+                <div class="bulk-actions" id="bulk-actions" style="display: none; gap: 10px; padding: 10px 24px; background: rgba(255, 255, 255, 0.02); border-bottom: 1px solid var(--border); align-items: center;">
+                    <span style="font-size: 0.8rem; color: var(--text-secondary); margin-right: 10px;" id="selected-count">0 selecionados</span>
+                    <button style="padding: 6px 12px; border-radius: 6px; border: 1px solid var(--red); background: var(--red-dim); color: var(--red); font-size: 0.75rem; cursor: pointer;" onclick="bulkDelete()">🗑 Eliminar Selecionados</button>
+                </div>
                 <div class="sales-table-wrapper">
                     <table class="sales-table">
                         <thead>
                             <tr>
+                                <th style="width: 40px;"><input type="checkbox" id="select-all" onclick="toggleSelectAll()" style="width:16px;height:16px;cursor:pointer;accent-color:var(--gold);"></th>
                                 <th>Data</th>
                                 <th>Cliente</th>
                                 <th>WhatsApp</th>
@@ -1000,6 +1015,13 @@
                         </thead>
                         <tbody id="sales-tbody"></tbody>
                     </table>
+                </div>
+                <div class="pagination" style="display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; border-top: 1px solid var(--border);">
+                    <div id="page-info" style="color: var(--text-secondary); font-size: 0.8rem;">Mostrando 0-0 de 0</div>
+                    <div style="display: flex; gap: 8px;">
+                        <button id="prev-page" onclick="changePage(-1)" style="padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--text-secondary); cursor: pointer; font-size: 0.75rem;">Anterior</button>
+                        <button id="next-page" onclick="changePage(1)" style="padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--text-secondary); cursor: pointer; font-size: 0.75rem;">Próxima</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1093,9 +1115,9 @@
 
                 allSales = data.sales;
                 renderStats(data.stats);
-                renderChart7Days(data.stats.grafico_7dias);
+                renderChart7DaysChartJS(data.stats.grafico_7dias);
                 renderPaymentMethods(data.stats.metodos_pagamento);
-                filterSales(currentFilter);
+                applyFiltersAndRender();
 
                 // Welcome date
                 const now = new Date();
@@ -1146,50 +1168,37 @@
         }
 
         // ==================== RENDER CHART ====================
-        function renderChart7Days(data) {
-            const container = document.getElementById('bar-chart-7days');
-            container.innerHTML = '';
-
-            const maxVal = Math.max(...data.map(d => d.aprovadas + d.rejeitadas), 1);
-
-            data.forEach(day => {
-                const group = document.createElement('div');
-                group.className = 'bar-group';
-
-                const stack = document.createElement('div');
-                stack.className = 'bar-stack';
-
-                if (day.rejeitadas > 0) {
-                    const barR = document.createElement('div');
-                    barR.className = 'bar rejected';
-                    barR.style.height = Math.max((day.rejeitadas / maxVal) * 100, 6) + '%';
-                    barR.title = day.rejeitadas + ' rejeitadas';
-                    stack.appendChild(barR);
+        let chartInstance = null;
+        function renderChart7DaysChartJS(data) {
+            const ctx = document.getElementById('bar-chart-7days');
+            if (!ctx) return;
+            
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+            
+            const labels = data.map(d => d.date);
+            const aprovadas = data.map(d => d.aprovadas);
+            const rejeitadas = data.map(d => d.rejeitadas);
+            
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'Aprovadas', data: aprovadas, backgroundColor: '#00E676', borderRadius: 4 },
+                        { label: 'Rejeitadas/Fraude', data: rejeitadas, backgroundColor: '#FF5252', borderRadius: 4 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { stacked: true, grid: { display: false } },
+                        y: { stacked: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { precision: 0 } }
+                    },
+                    plugins: { legend: { labels: { color: '#8E8E9A' } } }
                 }
-
-                if (day.aprovadas > 0) {
-                    const barA = document.createElement('div');
-                    barA.className = 'bar approved';
-                    barA.style.height = Math.max((day.aprovadas / maxVal) * 100, 6) + '%';
-                    barA.title = day.aprovadas + ' aprovadas';
-                    stack.appendChild(barA);
-                }
-
-                if (day.aprovadas === 0 && day.rejeitadas === 0) {
-                    const barE = document.createElement('div');
-                    barE.className = 'bar';
-                    barE.style.height = '4px';
-                    barE.style.background = 'rgba(255,255,255,0.06)';
-                    stack.appendChild(barE);
-                }
-
-                const label = document.createElement('div');
-                label.className = 'bar-label';
-                label.textContent = day.date;
-
-                group.appendChild(stack);
-                group.appendChild(label);
-                container.appendChild(group);
             });
         }
 
@@ -1228,30 +1237,96 @@
         function var_purple_dim() { return 'rgba(179,136,255,0.12)'; }
         function var_orange_dim() { return 'rgba(255,145,0,0.12)'; }
 
-        // ==================== RENDER SALES TABLE ====================
+        // ==================== RENDER SALES TABLE & BULK ACTIONS ====================
+        let currentPage = 1;
+        const itemsPerPage = 15;
+        let filteredSalesData = [];
+        let searchQuery = '';
+        let selectedIds = new Set();
+
+        function handleSearch() {
+            searchQuery = document.getElementById('search-input').value.toLowerCase();
+            currentPage = 1;
+            applyFiltersAndRender();
+        }
+
         function filterSales(filter, tabEl) {
             currentFilter = filter;
+            if (tabEl) {
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                tabEl.classList.add('active');
+            } else {
+                const el = document.querySelector(`.filter-tab[data-filter="${filter}"]`);
+                if(el) el.classList.add('active');
+            }
+            currentPage = 1;
+            applyFiltersAndRender();
+        }
 
-            // Update active tab
-            document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-            if (tabEl) tabEl.classList.add('active');
-            else document.querySelector(`.filter-tab[data-filter="${filter}"]`)?.classList.add('active');
-
+        function applyFiltersAndRender() {
             let filtered = allSales;
-            if (filter === 'aprovado') filtered = allSales.filter(s => s.status === 'aprovado' || s.status === 'aprovado_manual');
-            else if (filter !== 'all') filtered = allSales.filter(s => s.status === filter);
 
+            if (currentFilter === 'aprovado') {
+                filtered = filtered.filter(s => s.status === 'aprovado' || s.status === 'aprovado_manual');
+            } else if (currentFilter !== 'all') {
+                filtered = filtered.filter(s => s.status === currentFilter);
+            }
+
+            if (searchQuery) {
+                filtered = filtered.filter(s => 
+                    (s.nome && s.nome.toLowerCase().includes(searchQuery)) ||
+                    (s.whatsapp && s.whatsapp.toLowerCase().includes(searchQuery)) ||
+                    (s.id && s.id.toLowerCase().includes(searchQuery)) ||
+                    (s.token && s.token.toLowerCase().includes(searchQuery))
+                );
+            }
+
+            filteredSalesData = filtered;
             document.getElementById('table-count').textContent = filtered.length;
-            renderSalesTable(filtered);
+            
+            selectedIds.clear();
+            updateBulkActions();
+            const sa = document.getElementById('select-all');
+            if(sa) sa.checked = false;
+
+            renderPagination();
+        }
+
+        function changePage(delta) {
+            currentPage += delta;
+            renderPagination();
+        }
+
+        function renderPagination() {
+            const totalItems = filteredSalesData.length;
+            const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
+            
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+
+            const pageInfo = document.getElementById('page-info');
+            if (pageInfo) pageInfo.textContent = `Mostrando ${totalItems === 0 ? 0 : startIndex + 1}-${endIndex} de ${totalItems}`;
+            
+            const prev = document.getElementById('prev-page');
+            const next = document.getElementById('next-page');
+            if(prev) prev.disabled = currentPage === 1;
+            if(next) next.disabled = currentPage === totalPages;
+
+            const pageData = filteredSalesData.slice(startIndex, endIndex);
+            renderSalesTable(pageData);
         }
 
         function renderSalesTable(sales) {
             const tbody = document.getElementById('sales-tbody');
+            if (!tbody) return;
 
             if (sales.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state">
+                tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state">
                     <div class="empty-state-icon">📭</div>
-                    <div class="empty-state-text">Nenhuma venda encontrada nesta categoria</div>
+                    <div class="empty-state-text">Nenhuma venda encontrada</div>
                 </div></td></tr>`;
                 return;
             }
@@ -1264,18 +1339,13 @@
                     String(date.getHours()).padStart(2, '0') + ':' +
                     String(date.getMinutes()).padStart(2, '0');
 
-                const statusLabels = {
-                    'aprovado': '✅ Aprovado',
-                    'aprovado_manual': '🟢 Manual',
-                    'rejeitado': '❌ Rejeitado',
-                    'fraude': '🚨 Fraude'
-                };
-
+                const statusLabels = { 'aprovado': '✅ Aprovado', 'aprovado_manual': '🟢 Manual', 'rejeitado': '❌ Rejeitado', 'fraude': '🚨 Fraude' };
                 const statusLabel = statusLabels[sale.status] || sale.status;
-
                 const canApprove = sale.status === 'rejeitado' || sale.status === 'fraude';
+                const isChecked = selectedIds.has(sale.id) ? 'checked' : '';
 
                 return `<tr>
+                    <td><input type="checkbox" class="custom-checkbox row-checkbox" value="${sale.id}" ${isChecked} onchange="toggleRowSelection(this)"></td>
                     <td style="white-space:nowrap;color:var(--text-secondary);font-size:0.78rem;">${dateStr}</td>
                     <td style="font-weight:600;">${escapeHtml(sale.nome || '--')}</td>
                     <td style="color:var(--text-secondary);">${escapeHtml(sale.whatsapp || '--')}</td>
@@ -1291,6 +1361,105 @@
                     </td>
                 </tr>`;
             }).join('');
+            
+            const allPageIds = sales.map(s => s.id);
+            const allSelected = allPageIds.length > 0 && allPageIds.every(id => selectedIds.has(id));
+            const sa = document.getElementById('select-all');
+            if(sa) sa.checked = allSelected;
+        }
+
+        function toggleSelectAll() {
+            const selectAllChecked = document.getElementById('select-all').checked;
+            const checkboxes = document.querySelectorAll('.row-checkbox');
+            checkboxes.forEach(cb => {
+                cb.checked = selectAllChecked;
+                if (selectAllChecked) selectedIds.add(cb.value);
+                else selectedIds.delete(cb.value);
+            });
+            updateBulkActions();
+        }
+
+        function toggleRowSelection(cb) {
+            if (cb.checked) selectedIds.add(cb.value);
+            else selectedIds.delete(cb.value);
+            
+            const checkboxes = document.querySelectorAll('.row-checkbox');
+            const allChecked = Array.from(checkboxes).length > 0 && Array.from(checkboxes).every(c => c.checked);
+            const sa = document.getElementById('select-all');
+            if (sa) sa.checked = allChecked;
+            updateBulkActions();
+        }
+
+        function updateBulkActions() {
+            const bar = document.getElementById('bulk-actions');
+            const countLabel = document.getElementById('selected-count');
+            if(!bar || !countLabel) return;
+            const size = selectedIds.size;
+            
+            if (size > 0) {
+                bar.style.display = 'flex';
+                countLabel.textContent = `${size} selecionado${size > 1 ? 's' : ''}`;
+            } else {
+                bar.style.display = 'none';
+            }
+        }
+
+        async function bulkDelete() {
+            if (selectedIds.size === 0) return;
+            if (!confirm(`Tem certeza que deseja eliminar ${selectedIds.size} registo(s)? Esta ação é irreversível.`)) return;
+
+            showLoading(true);
+            try {
+                const res = await fetch(API_BASE + '/api/admin/bulk-delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'x-admin-password': adminPassword },
+                    body: JSON.stringify({ saleIds: Array.from(selectedIds) })
+                });
+                const data = await res.json();
+                if (data.ok) {
+                    showToast(`✅ ${data.message}`, 'success');
+                    selectedIds.clear();
+                    await loadDashboard();
+                } else {
+                    showToast('❌ ' + (data.reason || 'Erro ao eliminar'), 'error');
+                }
+            } catch (e) {
+                showToast('❌ Erro de conexão', 'error');
+            }
+            showLoading(false);
+        }
+
+        function exportToCSV() {
+            if (filteredSalesData.length === 0) {
+                showToast('Nenhum dado para exportar.', 'error');
+                return;
+            }
+            
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Data,ID,Nome,WhatsApp,Metodo_Pagamento,Status,Token,Valor\\n";
+            
+            filteredSalesData.forEach(sale => {
+                const date = new Date(sale.timestamp).toLocaleString('pt-BR');
+                const row = [
+                    `"${date}"`,
+                    `"${sale.id}"`,
+                    `"${sale.nome || ''}"`,
+                    `"${sale.whatsapp || ''}"`,
+                    `"${sale.metodo_pagamento || ''}"`,
+                    `"${sale.status}"`,
+                    `"${sale.token || ''}"`,
+                    "2490"
+                ].join(',');
+                csvContent += row + "\\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `relatorio_vendas_${new Date().getTime()}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
         function escapeHtml(text) {
@@ -1318,7 +1487,19 @@
             if (sale.comprovativo) {
                 const folder = (sale.status === 'aprovado' || sale.status === 'aprovado_manual') ? 'aprovados' : 'rejeitados';
                 const receiptUrl = API_BASE + '/api/admin/receipt/' + folder + '/' + sale.comprovativo + '?password=' + encodeURIComponent(adminPassword);
-                receiptHtml = `<img class="modal-receipt-img" src="${receiptUrl}" alt="Comprovativo" onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<div style=\\'color:var(--text-muted);text-align:center;padding:20px;font-size:0.82rem;\\'>Comprovativo não disponível</div>')">`;
+                
+                if (sale.comprovativo.toLowerCase().endsWith('.pdf')) {
+                    receiptHtml = `
+                        <div style="margin: 15px 0; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden;">
+                            <iframe src="${receiptUrl}" width="100%" height="300px" style="border: none;"></iframe>
+                        </div>
+                        <div style="text-align:center; margin-bottom: 15px;">
+                            <a href="${receiptUrl}" target="_blank" style="color: var(--gold); font-size: 0.85rem; text-decoration: none; font-weight: 600;">📄 Abrir PDF numa nova aba</a>
+                        </div>
+                    `;
+                } else {
+                    receiptHtml = `<img class="modal-receipt-img" src="${receiptUrl}" alt="Comprovativo" onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<div style=\\'color:var(--text-muted);text-align:center;padding:20px;font-size:0.82rem;\\'>Comprovativo não disponível</div>')">`;
+                }
             }
 
             let motivo = sale.motivo || '--';
