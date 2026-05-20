@@ -210,6 +210,9 @@ app.post('/api/verify-receipt', upload.single('receipt'), async (req, res) => {
 
         // Método de pagamento (enviado pelo frontend)
         const paymentMethod = req.body.paymentMethod || 'Desconhecido';
+        
+        // Obter IP do usuário para registo de segurança
+        const ip = req.ip || req.connection?.remoteAddress || 'Desconhecido';
 
         // Anti-Fraud: Duplicate Image Check (Hash Verification)
         const fileHash = getFileHash(file.path);
@@ -308,7 +311,6 @@ app.post('/api/verify-receipt', upload.single('receipt'), async (req, res) => {
         }
 
         // ==================== SUCESSO ====================
-        delete failedAttempts[whatsapp];
 
         // Registar Hash na Base de Dados para prevenir reutilização
         usedReceipts.add(fileHash);
@@ -532,6 +534,50 @@ app.delete('/api/admin/sale/:saleId', adminAuth, (req, res) => {
     saveSalesDB();
 
     return res.json({ ok: true, message: 'Venda eliminada com sucesso.' });
+});
+
+// Eliminar múltiplas vendas em massa
+app.post('/api/admin/bulk-delete', adminAuth, (req, res) => {
+    try {
+        const { saleIds } = req.body;
+        if (!Array.isArray(saleIds) || saleIds.length === 0) {
+            return res.status(400).json({ ok: false, reason: 'Nenhum ID fornecido.' });
+        }
+
+        let deletedCount = 0;
+        
+        // Iterar de trás para a frente ou usar filter para evitar problemas com splice em loop
+        // É mais seguro reescrever o array e deletar ficheiros dos removidos
+        
+        const idsToDelete = new Set(saleIds);
+        const initialLength = salesDB.length;
+        
+        const remainingSales = [];
+        for (const sale of salesDB) {
+            if (idsToDelete.has(sale.id)) {
+                // Deletar ficheiro
+                if (sale.comprovativo) {
+                    const pathApproved = path.join(approvedDir, sale.comprovativo);
+                    const pathRejected = path.join(rejectedDir, sale.comprovativo);
+                    try { if (fs.existsSync(pathApproved)) fs.unlinkSync(pathApproved); } catch(e) {}
+                    try { if (fs.existsSync(pathRejected)) fs.unlinkSync(pathRejected); } catch(e) {}
+                }
+                deletedCount++;
+            } else {
+                remainingSales.push(sale);
+            }
+        }
+
+        if (deletedCount > 0) {
+            salesDB = remainingSales; // Atualiza a base de dados em memória
+            saveSalesDB(); // Grava no disco
+        }
+
+        return res.json({ ok: true, message: `${deletedCount} registo(s) eliminado(s) com sucesso.` });
+    } catch (error) {
+        console.error("Erro no bulk delete:", error);
+        return res.status(500).json({ ok: false, reason: 'Erro interno ao eliminar registos.' });
+    }
 });
 
 // Servir imagens de comprovativos (protegido)
