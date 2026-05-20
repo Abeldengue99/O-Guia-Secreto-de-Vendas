@@ -1,0 +1,2588 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Como Fazer o Cliente Sentir que Precisa de Você! | Abel Dengue</title>
+    <meta name="description" content="Aprenda as técnicas profissionais de Abel Dengue para fazer qualquer cliente sentir que precisa de você. Ebook exclusivo por apenas 2.490 Kz.">
+    <link rel="icon" type="image/png" href="CAPA_opt.webp">
+
+    <!-- ⚡ SPEED: Preconnect para Google Fonts (elimina latência DNS) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- ⚡ SPEED: Preload da imagem da capa (recurso crítico acima do fold) -->
+    <link rel="preload" as="image" href="CAPA_opt.webp" type="image/webp">
+
+    <!-- Outfit Font (com font-display:swap para não bloquear render) -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap"
+        rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet"></noscript>
+    <style>
+        :root {
+            --gold: #D4AF37;
+            --gold-gradient: linear-gradient(135deg, #F5D060 0%, #D4AF37 50%, #AA7C11 100%);
+            --neon-orange: #FF5E00;
+            --neon-gradient: linear-gradient(135deg, #FF8737 0%, #FF5E00 100%);
+            --bg-black: #050505;
+            --bg-card: rgba(15, 15, 15, 0.85);
+            --bg-card-border: rgba(212, 175, 55, 0.2);
+            --text-light: #F5F5F5;
+            --text-gray: #9E9E9E;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        html, body {
+            overflow-x: hidden;
+            width: 100%;
+            position: relative;
+        }
+
+        body {
+            background-color: var(--bg-black);
+            color: var(--text-light);
+            font-size: 0.92rem;
+            line-height: 1.6;
+            padding-top: 38px;
+            /* ⚡ GPU: Evita repaints desnecessários */
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeSpeed;
+        }
+
+        /* ⚡ SPEED: Secções fora do ecrã só renderizam quando aparecem */
+        section:not(.hero-section) {
+            content-visibility: auto;
+            contain-intrinsic-size: 0 500px;
+        }
+
+        /* Ticker horizontal infinito de alta urgência */
+        .ticker-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            overflow: hidden;
+            background: rgba(10, 10, 10, 0.96);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+            z-index: 99999;
+            padding: 8px 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+        }
+
+        .ticker-track {
+            display: flex;
+            width: max-content;
+            animation: scrollTicker 30s linear infinite;
+            /* ⚡ GPU: Ticker roda 100% na placa gráfica */
+            will-change: transform;
+            backface-visibility: hidden;
+        }
+
+        @keyframes scrollTicker {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        .ticker-item {
+            padding: 0 40px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-light);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .ticker-item span.gold-text {
+            color: var(--gold);
+            font-weight: 900;
+        }
+
+        .ticker-item span.orange-text {
+            color: var(--neon-orange);
+            font-weight: 900;
+        }
+
+        /* Fitas Verticais Elegantes nas bordas da tela (Desktop Only) */
+        .ticker-vertical-left {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 34px;
+            height: 100vh;
+            background: rgba(10, 10, 10, 0.96);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-right: 1px solid rgba(212, 175, 55, 0.2);
+            z-index: 9999;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ticker-vertical-right {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 34px;
+            height: 100vh;
+            background: rgba(10, 10, 10, 0.96);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-left: 1px solid rgba(212, 175, 55, 0.2);
+            z-index: 9999;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Oculta fitas verticais laterais no mobile para excelente usabilidade */
+        @media (max-width: 1024px) {
+
+            .ticker-vertical-left,
+            .ticker-vertical-right {
+                display: none;
+            }
+
+            body {
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
+        }
+
+        @media (min-width: 1025px) {
+            body {
+                padding-left: 34px;
+                padding-right: 34px;
+            }
+        }
+
+        .ticker-vertical-track-up {
+            display: flex;
+            flex-direction: column;
+            height: max-content;
+            animation: scrollTickerUp 25s linear infinite;
+        }
+
+        .ticker-vertical-track-down {
+            display: flex;
+            flex-direction: column;
+            height: max-content;
+            animation: scrollTickerDown 25s linear infinite;
+        }
+
+        @keyframes scrollTickerUp {
+            0% {
+                transform: translateY(0);
+            }
+
+            100% {
+                transform: translateY(-50%);
+            }
+        }
+
+        @keyframes scrollTickerDown {
+            0% {
+                transform: translateY(-50%);
+            }
+
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+        .ticker-vertical-item {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            transform: rotate(180deg);
+            padding: 50px 0;
+            font-size: 0.62rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            white-space: nowrap;
+        }
+
+        .ticker-vertical-item span.gold-text {
+            color: var(--gold);
+            font-weight: 900;
+        }
+
+        .ticker-vertical-item span.orange-text {
+            color: var(--neon-orange);
+            font-weight: 900;
+        }
+
+        /* Ticker Horizontal do Meio (Divisor Cinético) */
+        .ticker-middle {
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(90deg, rgba(255, 94, 0, 0.04) 0%, rgba(212, 175, 55, 0.05) 50%, rgba(255, 94, 0, 0.04) 100%);
+            border-top: 1px solid rgba(255, 94, 0, 0.15);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+            padding: 12px 0;
+            margin: 50px 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .ticker-middle-track {
+            display: flex;
+            width: max-content;
+            animation: scrollTickerMiddle 30s linear infinite;
+        }
+
+        @keyframes scrollTickerMiddle {
+            0% {
+                transform: translateX(-50%);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+
+
+        /* Ambient Glows */
+        .glow-ambient {
+            position: absolute;
+            width: 45vw;
+            height: 45vw;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.05) 0%, transparent 70%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .glow-1 {
+            top: -10%;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .glow-2 {
+            top: 40%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: radial-gradient(circle, rgba(255, 94, 0, 0.04) 0%, transparent 70%);
+        }
+
+        .glow-3 {
+            bottom: 5%;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* Container - Monolithic Column (Centered, Perfectly Framed) */
+        .container {
+            width: 100%;
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* SECTION 1: HERO COVER (CLEAN - ONLY MOCKUP & COUNTDOWN) */
+        .hero-section {
+            padding: 40px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 95vh;
+            text-align: center;
+        }
+
+        /* 3D Ebook Mockup with floating effect & glow */
+        .mockup-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1200px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .mockup-container::after {
+            content: '';
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
+            z-index: -1;
+            filter: blur(10px);
+        }
+
+        .mockup-book {
+            position: relative;
+            width: 300px;
+            height: 432px;
+            transform-style: preserve-3d;
+            transform: rotateY(-20deg) rotateX(8deg);
+            transition: transform 0.5s ease;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+            animation: floatBook 5s ease-in-out infinite;
+            /* ⚡ GPU: Força aceleração por hardware para animação suave */
+            will-change: transform;
+            backface-visibility: hidden;
+        }
+
+        @keyframes floatBook {
+            0% {
+                transform: rotateY(-20deg) rotateX(8deg) translateY(0px);
+            }
+
+            50% {
+                transform: rotateY(-17deg) rotateX(6deg) translateY(-15px);
+            }
+
+            100% {
+                transform: rotateY(-20deg) rotateX(8deg) translateY(0px);
+            }
+        }
+
+        .mockup-book:hover {
+            animation-play-state: paused;
+            transform: rotateY(-5deg) rotateX(3deg) scale(1.05);
+        }
+
+        .book-front {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: url('./CAPA_opt.webp');
+            background-size: cover;
+            background-position: center;
+            border-radius: 0 6px 6px 0;
+            z-index: 2;
+            transform: translateZ(12px);
+        }
+
+        .book-spine {
+            position: absolute;
+            width: 24px;
+            height: 100%;
+            background: #0a0a0a;
+            left: -12px;
+            transform: rotateY(-90deg);
+            z-index: 1;
+            border-left: 1px solid rgba(212, 175, 55, 0.4);
+        }
+
+        .book-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #050505;
+            transform: rotateY(180deg) translateZ(12px);
+            z-index: 0;
+            border-radius: 6px 0 0 6px;
+        }
+
+        /* Countdown Urgency bar - Perfectly Centered */
+        .urgency-bar {
+            background: rgba(255, 94, 0, 0.06);
+            border: 1px solid rgba(255, 94, 0, 0.2);
+            border-radius: 50px;
+            padding: 10px 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 0 8px 24px rgba(255, 94, 0, 0.03);
+            margin: 0 auto 24px auto;
+        }
+
+        .urgency-text {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #FF8737;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .urgency-timer {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 800;
+            font-size: 1.15rem;
+            color: var(--text-light);
+        }
+
+        .timer-segment {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 2px 10px;
+            border-radius: 5px;
+            border: 1px solid rgba(255, 94, 0, 0.25);
+            min-width: 36px;
+            text-align: center;
+        }
+
+        /* Elegant CTA buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 380px;
+            padding: 15px 28px;
+            font-size: 0.95rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            text-decoration: none;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Gold Button style with Premium Sheen */
+        .btn-gold {
+            background: linear-gradient(135deg, #FFE082 0%, #D4AF37 50%, #B78708 100%);
+            color: #050505;
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.15) inset;
+        }
+
+        /* Continuous diagonal sheen effect for premium feel */
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transform: skewX(-20deg);
+            animation: shine 4s infinite linear;
+        }
+
+        @keyframes shine {
+            0% {
+                left: -150%;
+            }
+
+            50% {
+                left: 150%;
+            }
+
+            100% {
+                left: 150%;
+            }
+        }
+
+        .btn-gold:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 12px 30px rgba(212, 175, 55, 0.55);
+        }
+
+        .btn-whatsapp {
+            background: #25D366;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.15);
+            margin-top: 10px;
+        }
+
+        .btn-whatsapp:hover {
+            transform: translateY(-1.5px) scale(1.02);
+            box-shadow: 0 8px 18px rgba(37, 211, 102, 0.35);
+        }
+
+        /* SECTION 2: WHY BUY (Stacked vertically, aligned & compact) */
+        .why-section {
+            padding: 60px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .section-header h2 {
+            font-size: 1.8rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .section-header h2 span {
+            color: var(--gold);
+        }
+
+        .section-header p {
+            color: var(--text-gray);
+            font-size: 0.88rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        /* Unified Vertical Box Layout (Problems and Solutions perfectly stacked) */
+        .vertical-box {
+            background: rgba(10, 10, 10, 0.65) !important;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 24px 20px;
+            margin-bottom: 24px;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Caixa de Dor Premium com Alerta de Urgencia */
+        .pain-box-premium {
+            background: linear-gradient(135deg, rgba(255, 82, 82, 0.04) 0%, rgba(255, 82, 82, 0.01) 100%) !important;
+            border: 1px solid rgba(255, 82, 82, 0.25) !important;
+            box-shadow: 0 10px 30px rgba(255, 82, 82, 0.03) !important;
+        }
+
+        .pain-box-premium:hover {
+            border-color: rgba(255, 82, 82, 0.55) !important;
+            box-shadow: 0 12px 35px rgba(255, 82, 82, 0.08) !important;
+            transform: translateY(-2px);
+        }
+
+        /* Caixa de Solucao Premium com Foco de Desejo */
+        .solution-box-premium {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.06) 0%, rgba(212, 175, 55, 0.02) 100%) !important;
+            border: 1px solid rgba(212, 175, 55, 0.35) !important;
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.04) !important;
+        }
+
+        .solution-box-premium:hover {
+            border-color: var(--gold) !important;
+            box-shadow: 0 12px 35px rgba(212, 175, 55, 0.15) !important;
+            transform: translateY(-2px);
+        }
+
+        /* Badges de Urgencia Integrados */
+        .urgency-badge-red {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 82, 82, 0.1);
+            border: 1px solid rgba(255, 82, 82, 0.3);
+            color: #FF5252;
+            font-size: 0.68rem;
+            font-weight: 800;
+            padding: 6px 12px;
+            border-radius: 50px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            animation: pulse-red 2s infinite ease-in-out;
+        }
+
+        .urgency-badge-gold {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            color: var(--gold);
+            font-size: 0.68rem;
+            font-weight: 800;
+            padding: 6px 12px;
+            border-radius: 50px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes pulse-red {
+            0% {
+                opacity: 0.85;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.02);
+            }
+
+            100% {
+                opacity: 0.85;
+                transform: scale(1);
+            }
+        }
+
+        .box-title-red {
+            color: #FF5252;
+            font-size: 1.1rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .box-title-gold {
+            color: var(--gold);
+            font-size: 1.1rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .box-desc {
+            color: var(--text-light);
+            font-size: 0.88rem;
+            margin-bottom: 16px;
+            line-height: 1.6;
+        }
+
+        /* Estilo dos Micro-Cards da Lista (Ganha Vida) */
+        .list-items {
+            list-style: none;
+            padding: 0;
+            margin: 16px 0 0 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .list-items li {
+            position: relative;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 12px;
+            padding: 14px 16px 14px 48px;
+            /* Espaço para o ícone absoluto */
+            font-size: 0.85rem;
+            line-height: 1.5;
+            transition: all 0.3s ease;
+        }
+
+        /* Hover animado nos itens individuais */
+        .list-items.pain li:hover {
+            background: rgba(255, 82, 82, 0.04) !important;
+            border-color: rgba(255, 82, 82, 0.25) !important;
+            transform: translateX(4px);
+        }
+
+        .list-items.solution li:hover {
+            background: rgba(212, 175, 55, 0.06) !important;
+            border-color: rgba(212, 175, 55, 0.4) !important;
+            transform: translateX(4px);
+        }
+
+        /* Ícones Customizados como Capsules nos Itens */
+        .list-items.pain li::before {
+            content: '✕';
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 22px;
+            height: 22px;
+            background: rgba(255, 82, 82, 0.15);
+            border: 1px solid rgba(255, 82, 82, 0.3);
+            color: #FF5252;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            font-weight: 900;
+        }
+
+        .list-items.solution li::before {
+            content: '✓';
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 22px;
+            height: 22px;
+            background: rgba(212, 175, 55, 0.15);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            color: var(--gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 900;
+        }
+
+        /* Destaque nos títulos internos das cápsulas */
+        .list-items li strong {
+            display: block;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+            letter-spacing: 0.3px;
+        }
+
+        .list-items.pain li strong {
+            color: #FF8A8A;
+        }
+
+        .list-items.solution li strong {
+            color: var(--gold);
+        }
+
+        .list-items li span.desc-text {
+            display: block;
+            color: var(--text-gray);
+            font-size: 0.8rem;
+        }
+
+        /* Mid CTA Area */
+        .mid-cta-area {
+            text-align: center;
+            padding: 30px 20px;
+            background: radial-gradient(circle at center, rgba(212, 175, 55, 0.04) 0%, transparent 70%);
+            margin-top: 20px;
+            border-radius: 16px;
+        }
+
+        .mid-cta-area p {
+            font-size: 1rem;
+            font-weight: 800;
+            color: #FFF;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* SECTION 3: THE EBOOK DETAILS (Chapters fully catalogued) */
+        .details-section {
+            padding: 60px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Chapter Cards - Stacked Vertically */
+        .chapter-card {
+            background: var(--bg-card);
+            border: 1px solid var(--bg-card-border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .chapter-card:hover {
+            border-color: var(--gold);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .chapter-tag {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            color: var(--gold);
+            font-size: 0.65rem;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 50px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .chapter-num {
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: var(--neon-orange);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 6px;
+        }
+
+        .chapter-title {
+            font-size: 1.15rem;
+            font-weight: 900;
+            color: #FFF;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            padding-right: 80px;
+        }
+
+        .chapter-desc {
+            font-size: 0.84rem;
+            color: var(--text-gray);
+            line-height: 1.5;
+        }
+
+        /* Special dynamic list for pages inside chapters */
+        .chapter-pages {
+            margin-top: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            padding-top: 14px;
+        }
+
+        .page-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-bottom: 6px;
+        }
+
+        .page-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .page-name {
+            font-weight: 600;
+            color: #CCC;
+        }
+
+        .page-num {
+            font-weight: 800;
+            color: var(--gold);
+        }
+
+        /* SECTION 4: SOCIAL PROOF & GUARANTEES */
+        .proof-section {
+            padding: 60px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .secure-key-badge {
+            margin-top: 8px;
+            font-size: 0.72rem;
+            color: #A0A0A0;
+        }
+
+        .secure-text {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 0.72rem;
+            color: var(--text-gray);
+            margin-top: 12px;
+            text-transform: uppercase;
+        }
+
+        .secure-text span {
+            color: var(--gold);
+        }
+
+        /* Stacked Guarantee and Anti-Fraud flow underneath checkout */
+        .guarantee-box-vertical {
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .guarantee-title-vertical {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--gold);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .guarantee-desc-vertical {
+            color: var(--text-gray);
+            font-size: 0.82rem;
+            line-height: 1.5;
+        }
+
+        .flow-vertical-stack {
+            background: rgba(255, 94, 0, 0.02);
+            border: 1px solid rgba(255, 94, 0, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .flow-title-vertical {
+            font-size: 1rem;
+            font-weight: 800;
+            color: #FF8737;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .flow-step-vertical-item {
+            display: flex;
+            gap: 14px;
+            margin-bottom: 16px;
+            align-items: flex-start;
+        }
+
+        .flow-step-vertical-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .flow-step-number-circle {
+            background: rgba(255, 94, 0, 0.08);
+            border: 1px solid rgba(255, 94, 0, 0.2);
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: #FF8737;
+            flex-shrink: 0;
+        }
+
+        .flow-step-vertical-text h5 {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #FFF;
+            margin-bottom: 2px;
+        }
+
+        .flow-step-vertical-text p {
+            color: var(--text-gray);
+            font-size: 0.8rem;
+            line-height: 1.4;
+        }
+
+        /* Footer */
+        footer {
+            background: #020202;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 30px 0;
+            text-align: center;
+            font-size: 0.78rem;
+            color: var(--text-gray);
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #101010;
+            border: 1px solid var(--gold);
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 6px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 1000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-size: 0.82rem;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* ============================================= */
+        /* RESPONSIVE: Tablets (max-width: 768px)        */
+        /* ============================================= */
+        @media (max-width: 768px) {
+            body {
+                font-size: 0.9rem;
+            }
+
+            .container {
+                padding: 0 16px;
+            }
+
+            .hero-section {
+                min-height: 85vh;
+                padding: 30px 0;
+            }
+
+            .section-header h2 {
+                font-size: 1.55rem;
+            }
+
+            .section-header p {
+                font-size: 0.84rem;
+            }
+
+            .chapter-title {
+                font-size: 1.05rem;
+                padding-right: 70px;
+            }
+
+            .chapter-desc {
+                font-size: 0.82rem;
+            }
+
+            .mockup-book {
+                width: 280px;
+                height: 403px;
+            }
+
+            .btn {
+                max-width: 340px;
+                padding: 13px 24px;
+                font-size: 0.88rem;
+            }
+
+            .ticker-middle {
+                margin: 35px 0;
+                padding: 10px 0;
+            }
+        }
+
+        /* ============================================= */
+        /* RESPONSIVE: Large phones (max-width: 600px)   */
+        /* ============================================= */
+        @media (max-width: 600px) {
+            .hero-section {
+                min-height: 80vh;
+                padding: 24px 0;
+            }
+
+            .section-header h2 {
+                font-size: 1.4rem;
+            }
+
+            .mockup-book {
+                width: 270px;
+                height: 388px;
+            }
+
+            .vertical-box {
+                padding: 20px 16px;
+                border-radius: 16px;
+            }
+
+            .box-title-red,
+            .box-title-gold {
+                font-size: 1rem;
+            }
+
+            .box-desc {
+                font-size: 0.84rem;
+            }
+
+            .list-items li {
+                padding: 12px 14px 12px 44px;
+                font-size: 0.82rem;
+            }
+
+            .list-items li strong {
+                font-size: 0.86rem;
+            }
+
+            .list-items li span.desc-text {
+                font-size: 0.78rem;
+            }
+
+            .chapter-card {
+                padding: 20px 16px;
+                border-radius: 14px;
+            }
+
+            .chapter-title {
+                font-size: 1rem;
+                padding-right: 60px;
+            }
+
+            .chapter-tag {
+                top: 16px;
+                right: 14px;
+                font-size: 0.6rem;
+                padding: 3px 8px;
+            }
+
+            .btn {
+                max-width: 100%;
+                padding: 13px 20px;
+                font-size: 0.85rem;
+                border-radius: 10px;
+            }
+
+            /* Guarantee and flow sections */
+            .guarantee-box-vertical {
+                padding: 16px;
+                border-radius: 14px;
+            }
+
+            .flow-vertical-stack {
+                padding: 16px;
+                border-radius: 14px;
+            }
+
+            /* Toast mobile positioning */
+            .toast {
+                left: 16px;
+                right: 16px;
+                bottom: 16px;
+                max-width: none;
+                justify-content: center;
+                font-size: 0.8rem;
+            }
+        }
+
+        /* ============================================= */
+        /* RESPONSIVE: Regular phones (max-width: 480px) */
+        /* ============================================= */
+        @media (max-width: 480px) {
+            body {
+                font-size: 0.88rem;
+                padding-top: 34px;
+            }
+
+            /* Ticker banner compact */
+            .ticker-banner {
+                padding: 6px 0;
+            }
+
+            .ticker-item {
+                padding: 0 20px;
+                font-size: 0.62rem;
+                letter-spacing: 1.2px;
+                gap: 5px;
+            }
+
+            /* Hero section */
+            .hero-section {
+                min-height: 75vh;
+                padding: 20px 0;
+            }
+
+            /* Ebook cover - proportionate for mobile */
+            .mockup-book {
+                width: 260px !important;
+                height: 374px !important;
+            }
+
+            .mockup-container {
+                margin-bottom: 24px;
+            }
+
+            .mockup-container::after {
+                width: 150px;
+                height: 150px;
+            }
+
+            .book-spine {
+                width: 18px !important;
+                left: -9px !important;
+            }
+
+            .book-back {
+                transform: rotateY(180deg) translateZ(9px) !important;
+            }
+
+            /* Urgency bar - fully responsive */
+            .urgency-bar {
+                padding: 8px 12px !important;
+                gap: 6px !important;
+                max-width: 100% !important;
+                margin-bottom: 16px !important;
+                flex-direction: column;
+                border-radius: 14px;
+            }
+
+            .urgency-text {
+                font-size: 0.7rem;
+                letter-spacing: 0.8px;
+            }
+
+            .urgency-timer {
+                font-size: 0.95rem !important;
+            }
+
+            .timer-segment {
+                min-width: 28px !important;
+                padding: 2px 6px !important;
+                font-size: 0.9rem;
+            }
+
+            /* Section headers */
+            .section-header {
+                margin-bottom: 28px;
+            }
+
+            .section-header h2 {
+                font-size: 1.25rem;
+                letter-spacing: 0.3px;
+            }
+
+            .section-header p {
+                font-size: 0.82rem;
+                max-width: 100%;
+                padding: 0 4px;
+            }
+
+            /* Why section */
+            .why-section {
+                padding: 40px 0;
+            }
+
+            /* Vertical boxes */
+            .vertical-box {
+                padding: 18px 14px;
+                margin-bottom: 18px;
+                border-radius: 14px;
+            }
+
+            .box-title-red,
+            .box-title-gold {
+                font-size: 0.95rem;
+                gap: 6px;
+            }
+
+            .box-desc {
+                font-size: 0.82rem;
+                margin-bottom: 12px;
+            }
+
+            /* Urgency badges */
+            .urgency-badge-red {
+                font-size: 0.62rem;
+                padding: 5px 10px;
+                letter-spacing: 0.8px;
+            }
+
+            .urgency-badge-gold {
+                font-size: 0.62rem;
+                padding: 5px 10px;
+            }
+
+            /* List items */
+            .list-items {
+                gap: 10px;
+                margin-top: 12px;
+            }
+
+            .list-items li {
+                padding: 11px 12px 11px 40px;
+                font-size: 0.8rem;
+                border-radius: 10px;
+            }
+
+            .list-items.pain li::before,
+            .list-items.solution li::before {
+                left: 10px;
+                width: 20px;
+                height: 20px;
+                font-size: 0.6rem;
+            }
+
+            .list-items li strong {
+                font-size: 0.84rem;
+            }
+
+            .list-items li span.desc-text {
+                font-size: 0.76rem;
+            }
+
+            /* Mid CTA area */
+            .mid-cta-area {
+                padding: 24px 14px;
+                margin-top: 14px;
+                border-radius: 14px;
+            }
+
+            .mid-cta-area p {
+                font-size: 0.9rem;
+                margin-bottom: 14px;
+            }
+
+            /* All buttons */
+            .btn {
+                padding: 12px 18px !important;
+                font-size: 0.78rem !important;
+                max-width: 100% !important;
+                border-radius: 10px !important;
+                letter-spacing: 1px;
+            }
+
+            /* Details section */
+            .details-section {
+                padding: 40px 0;
+            }
+
+            /* Chapter cards */
+            .chapter-card {
+                padding: 18px 14px;
+                border-radius: 14px;
+                margin-bottom: 16px;
+            }
+
+            .chapter-num {
+                font-size: 0.68rem;
+            }
+
+            .chapter-title {
+                font-size: 0.95rem;
+                padding-right: 55px;
+                line-height: 1.35;
+            }
+
+            .chapter-tag {
+                top: 14px;
+                right: 12px;
+                font-size: 0.58rem;
+                padding: 3px 7px;
+            }
+
+            .chapter-desc {
+                font-size: 0.8rem;
+            }
+
+            .chapter-pages {
+                margin-top: 12px;
+                padding-top: 12px;
+            }
+
+            .page-item {
+                font-size: 0.76rem;
+            }
+
+            /* Proof section */
+            .proof-section {
+                padding: 40px 0;
+            }
+
+            /* Guarantee boxes */
+            .guarantee-box-vertical {
+                padding: 16px 14px;
+                border-radius: 14px;
+            }
+
+            .guarantee-title-vertical {
+                font-size: 0.92rem;
+            }
+
+            .guarantee-desc-vertical {
+                font-size: 0.78rem;
+            }
+
+            /* Flow steps */
+            .flow-vertical-stack {
+                padding: 16px 14px;
+                border-radius: 14px;
+            }
+
+            .flow-title-vertical {
+                font-size: 0.92rem;
+            }
+
+            .flow-step-vertical-item {
+                gap: 10px;
+                margin-bottom: 14px;
+            }
+
+            .flow-step-number-circle {
+                width: 24px;
+                height: 24px;
+                font-size: 0.75rem;
+            }
+
+            .flow-step-vertical-text h5 {
+                font-size: 0.82rem;
+            }
+
+            .flow-step-vertical-text p {
+                font-size: 0.76rem;
+            }
+
+            /* Footer */
+            footer {
+                padding: 24px 0;
+                font-size: 0.74rem;
+            }
+
+            /* Payment tabs */
+            .pay-tabs-container {
+                border-radius: 12px;
+                gap: 3px;
+                padding: 3px;
+            }
+
+            .pay-tab {
+                padding: 9px 6px;
+                font-size: 0.78rem;
+                border-radius: 9px;
+            }
+
+            /* Toast - centrado no mobile */
+            .toast {
+                left: 12px;
+                right: 12px;
+                bottom: 12px;
+                max-width: none;
+                border-radius: 10px;
+                padding: 10px 14px;
+                font-size: 0.78rem;
+                justify-content: center;
+            }
+
+            /* Ticker middle */
+            .ticker-middle {
+                margin: 30px 0;
+                padding: 8px 0;
+            }
+
+            /* AI Steps */
+            .ai-step {
+                padding: 6px 0;
+                gap: 8px;
+            }
+
+            .ai-step-icon {
+                font-size: 0.82rem;
+            }
+
+            .ai-step-text {
+                font-size: 0.74rem;
+            }
+
+            /* Ambient glows scaled down for performance */
+            .glow-ambient {
+                width: 80vw;
+                height: 80vw;
+                opacity: 0.6;
+            }
+        }
+
+        /* ============================================= */
+        /* RESPONSIVE: Small phones (max-width: 360px)   */
+        /* ============================================= */
+        @media (max-width: 360px) {
+            body {
+                font-size: 0.85rem;
+                padding-top: 30px;
+            }
+
+            .ticker-banner {
+                padding: 5px 0;
+            }
+
+            .ticker-item {
+                padding: 0 14px;
+                font-size: 0.58rem;
+                letter-spacing: 1px;
+            }
+
+            .container {
+                padding: 0 12px;
+            }
+
+            .hero-section {
+                min-height: 70vh;
+                padding: 16px 0;
+            }
+
+            /* Ebook cover smaller */
+            .mockup-book {
+                width: 230px !important;
+                height: 331px !important;
+            }
+
+            .mockup-container {
+                margin-bottom: 20px;
+            }
+
+            .book-spine {
+                width: 16px !important;
+                left: -8px !important;
+            }
+
+            .book-back {
+                transform: rotateY(180deg) translateZ(8px) !important;
+            }
+
+            /* Section headers */
+            .section-header h2 {
+                font-size: 1.12rem;
+            }
+
+            .section-header p {
+                font-size: 0.78rem;
+            }
+
+            /* Vertical boxes */
+            .vertical-box {
+                padding: 14px 12px;
+                margin-bottom: 14px;
+            }
+
+            .box-title-red,
+            .box-title-gold {
+                font-size: 0.88rem;
+            }
+
+            .box-desc {
+                font-size: 0.78rem;
+            }
+
+            /* Urgency badges */
+            .urgency-badge-red,
+            .urgency-badge-gold {
+                font-size: 0.58rem;
+                padding: 4px 8px;
+                letter-spacing: 0.6px;
+            }
+
+            /* List items */
+            .list-items li {
+                padding: 10px 10px 10px 36px;
+                font-size: 0.76rem;
+            }
+
+            .list-items.pain li::before,
+            .list-items.solution li::before {
+                left: 8px;
+                width: 18px;
+                height: 18px;
+                font-size: 0.55rem;
+            }
+
+            .list-items li strong {
+                font-size: 0.8rem;
+            }
+
+            .list-items li span.desc-text {
+                font-size: 0.72rem;
+            }
+
+            /* Buttons extra compact */
+            .btn {
+                padding: 10px 14px !important;
+                font-size: 0.72rem !important;
+                letter-spacing: 0.8px;
+                border-radius: 8px !important;
+            }
+
+            .mid-cta-area p {
+                font-size: 0.82rem;
+            }
+
+            /* Chapter cards */
+            .chapter-card {
+                padding: 14px 12px;
+            }
+
+            .chapter-title {
+                font-size: 0.88rem;
+                padding-right: 50px;
+            }
+
+            .chapter-tag {
+                font-size: 0.55rem;
+                padding: 2px 6px;
+                top: 12px;
+                right: 10px;
+            }
+
+            .chapter-desc {
+                font-size: 0.76rem;
+            }
+
+            /* Payment tabs */
+            .pay-tab {
+                padding: 8px 4px;
+                font-size: 0.72rem;
+            }
+
+            /* Urgency bar stacked */
+            .urgency-bar {
+                padding: 6px 10px !important;
+                border-radius: 12px;
+            }
+
+            .urgency-text {
+                font-size: 0.64rem;
+            }
+
+            .urgency-timer {
+                font-size: 0.85rem !important;
+            }
+
+            .timer-segment {
+                min-width: 26px !important;
+                padding: 1px 5px !important;
+                font-size: 0.82rem;
+            }
+        }
+
+        /* ============================================= */
+        /* RESPONSIVE: Modal specific mobile fixes       */
+        /* ============================================= */
+        @media (max-width: 480px) {
+            .modal-overlay {
+                padding: 10px;
+                align-items: flex-start;
+                padding-top: 40px;
+            }
+
+            .modal-box {
+                max-width: 100% !important;
+                max-height: 88vh;
+                border-radius: 18px !important;
+                padding: 24px 16px 20px !important;
+            }
+
+            .modal-close {
+                top: 14px;
+                right: 14px;
+                width: 28px;
+                height: 28px;
+                font-size: 0.8rem;
+            }
+
+            .verification-input {
+                padding: 11px 14px;
+                font-size: 0.85rem;
+                border-radius: 10px;
+                margin-bottom: 10px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .modal-overlay {
+                padding: 6px;
+                padding-top: 34px;
+            }
+
+            .modal-box {
+                padding: 20px 12px 16px !important;
+                border-radius: 16px !important;
+            }
+
+            .verification-input {
+                padding: 10px 12px;
+                font-size: 0.82rem;
+            }
+        }
+
+        /* Payment method tabs - Stripe/iOS Segmented Control Style */
+        .pay-tabs-container {
+            display: flex;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 4px;
+            border-radius: 14px;
+            gap: 4px;
+            margin-bottom: 20px;
+        }
+
+        .pay-tab {
+            flex: 1;
+            padding: 11px;
+            border-radius: 10px;
+            border: 1px solid transparent;
+            background: transparent;
+            color: #888;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Outfit', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .pay-tab:hover {
+            color: #FFF;
+        }
+
+        .pay-tab.active-tab {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(212, 175, 55, 0.04));
+            border: 1px solid rgba(212, 175, 55, 0.35);
+            color: var(--gold);
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.08);
+        }
+
+        /* AI Step items */
+        .ai-step {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            transition: opacity 0.4s ease;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .ai-step:last-child {
+            border-bottom: none;
+        }
+
+        .ai-step-icon {
+            font-size: 0.9rem;
+            width: 18px;
+            text-align: center;
+        }
+
+        .ai-step-text {
+            font-size: 0.78rem;
+            color: #888;
+            transition: color 0.4s ease;
+        }
+
+        .btn-access {
+            background: linear-gradient(135deg, #A7FFEB 0%, #00E676 50%, #00B0FF 100%);
+            color: #050505;
+            box-shadow: 0 6px 22px rgba(0, 230, 118, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.25) inset;
+        }
+
+        .btn-access:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 12px 32px rgba(0, 230, 118, 0.6);
+        }
+
+        /* MODAL */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            z-index: 10000;
+            display: none;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 40px 16px 16px;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+            animation: fadeInOverlay 0.3s ease;
+        }
+
+        @keyframes fadeInOverlay {
+            from {
+                opacity: 0
+            }
+
+            to {
+                opacity: 1
+            }
+        }
+
+        .modal-box {
+            position: relative;
+            width: 100%;
+            max-width: 440px;
+            margin-top: auto;
+            margin-bottom: auto;
+            max-height: none;
+            flex-shrink: 0;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(212, 175, 55, 0.2) transparent;
+            animation: slideUpModal 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .modal-box::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .modal-box::-webkit-scrollbar-thumb {
+            background: rgba(212, 175, 55, 0.2);
+            border-radius: 4px;
+        }
+
+        @keyframes slideUpModal {
+            from {
+                transform: translateY(40px) scale(0.96);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Inputs Premium */
+        .verification-input {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 0.9rem;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            color: #FFF;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s ease;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .verification-input:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 16px rgba(212, 175, 55, 0.12);
+            background: rgba(255, 255, 255, 0.04);
+            outline: none;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 10;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #AAA;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #FFF;
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: rotate(90deg);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Fita de Urgência Horizontal Infinita (Estilo Premium e Elegante) -->
+    <div class="ticker-banner">
+        <div class="ticker-track">
+            <!-- Grupo 1 -->
+            <div class="ticker-item"><span class="orange-text">🔥</span> ÚLTIMAS CÓPIAS COM DESCONTO DE LANÇAMENTO</div>
+            <div class="ticker-item"><span class="gold-text">⚡</span> SISTEMA DE SEGURANÇA IA ACTIVO</div>
+            <div class="ticker-item"><span class="orange-text">⏳</span> A PROMOÇÃO DE 2.490 KZ TERMINA HOJE</div>
+            <div class="ticker-item"><span class="gold-text">🛡️</span> ACESSO IMEDIATO COM DOWNLOAD DE PDF</div>
+            <!-- Grupo 2 (Duplicado para loop infinito perfeito e contínuo) -->
+            <div class="ticker-item"><span class="orange-text">🔥</span> ÚLTIMAS CÓPIAS COM DESCONTO DE LANÇAMENTO</div>
+            <div class="ticker-item"><span class="gold-text">⚡</span> SISTEMA DE SEGURANÇA IA ACTIVO</div>
+            <div class="ticker-item"><span class="orange-text">⏳</span> A PROMOÇÃO DE 2.490 KZ TERMINA HOJE</div>
+            <div class="ticker-item"><span class="gold-text">🛡️</span> ACESSO IMEDIATO COM DOWNLOAD DE PDF</div>
+            <div class="ticker-item"><span class="gold-text">💎</span> O GUIA SECRETO DE VENDAS ABEL DENGUE</div>
+        </div>
+    </div>
+
+    <!-- Fitas Verticais Laterais de Urgência (Exclusivo Desktop, Rolagem Suave Invertida) -->
+    <div class="ticker-vertical-left">
+        <div class="ticker-vertical-track-up">
+            <!-- Grupo 1 -->
+            <div class="ticker-vertical-item"><span class="gold-text">💎</span> MANUAL DE ELITE</div>
+            <div class="ticker-vertical-item"><span class="orange-text">⏳</span> PREÇO BAIXO</div>
+            <div class="ticker-vertical-item"><span class="gold-text">⚡</span> IA ACTIVA</div>
+            <div class="ticker-vertical-item"><span class="gold-text">🛡️</span> PDF SEGURO</div>
+            <!-- Grupo 2 (Duplicado para loop infinito) -->
+            <div class="ticker-vertical-item"><span class="gold-text">💎</span> MANUAL DE ELITE</div>
+            <div class="ticker-vertical-item"><span class="orange-text">⏳</span> PREÇO BAIXO</div>
+            <div class="ticker-vertical-item"><span class="gold-text">⚡</span> IA ACTIVA</div>
+            <div class="ticker-vertical-item"><span class="gold-text">🛡️</span> PDF SEGURO</div>
+        </div>
+    </div>
+
+    <div class="ticker-vertical-right">
+        <div class="ticker-vertical-track-down">
+            <!-- Grupo 1 -->
+            <div class="ticker-vertical-item"><span class="orange-text">🔥</span> COMPRA SEGURA</div>
+            <div class="ticker-vertical-item"><span class="gold-text">📈</span> VENDA MAIS</div>
+            <div class="ticker-vertical-item"><span class="gold-text">💎</span> POSICIONAMENTO</div>
+            <!-- Grupo 2 (Duplicado para loop infinito) -->
+            <div class="ticker-vertical-item"><span class="orange-text">🔥</span> COMPRA SEGURA</div>
+            <div class="ticker-vertical-item"><span class="gold-text">📈</span> VENDA MAIS</div>
+            <div class="ticker-vertical-item"><span class="gold-text">💎</span> POSICIONAMENTO</div>
+        </div>
+    </div>
+
+
+    <!-- Ambient BG Glows -->
+    <div class="glow-ambient glow-1"></div>
+    <div class="glow-ambient glow-2"></div>
+    <div class="glow-ambient glow-3"></div>
+
+    <!-- MAIN WRAPPER (Everything stacked in the exact same aligned visual line) -->
+    <div class="container">
+
+        <!-- SECTION 1: HERO COVER -->
+        <section class="hero-section">
+            <!-- Centered Floating Ebook Mockup -->
+            <div class="mockup-container">
+                <div class="mockup-book">
+                    <div class="book-front"></div>
+                    <div class="book-spine"></div>
+                    <div class="book-back"></div>
+                </div>
+            </div>
+
+
+
+            <!-- Interactive Main CTA Pulse Button with extremely strong copy -->
+            <button onclick="openCheckoutModal()" class="btn btn-gold" style="margin-bottom: 20px;">
+                🔥 QUERO O MEU EBOOK AGORA ➔
+            </button>
+        </section>
+
+        <!-- SECTION 2: WHY BUY (Centered Single-Column Monolithic Flow) -->
+        <section class="why-section">
+            <div class="section-header">
+                <h2>O que este <span>Ebook de Elite</span> fará por si</h2>
+                <p>Muito mais que um livro simples, um manual prático de posicionamento inabalável.</p>
+            </div>
+
+            <!-- Pain Box (First) -->
+            <div class="vertical-box pain-box-premium">
+                <div class="urgency-badge-red">
+                    ⚠️ ALERTA: CUSTO DA INÉRCIA EM TEMPO REAL
+                </div>
+                <div class="box-title-red">
+                    <span>✕</span> O Cenário Atual (Problemas)
+                </div>
+                <p class="box-desc" style="color: #FFCDD2; font-weight: 500;">O mercado está saturado e a atenção do
+                    cliente é disputada a cada segundo. Se você comete estes erros clássicos, está a queimar dinheiro
+                    diariamente:</p>
+                <ul class="list-items pain">
+                    <li>
+                        <strong>Desespero Comercial</strong>
+                        <span class="desc-text">Enviar mensagens de venda invasivas parecendo desesperado por
+                            atenção.</span>
+                    </li>
+                    <li>
+                        <strong>Contacto Forçado</strong>
+                        <span class="desc-text">Tentar vender o produto logo no primeiro segundo de conversa.</span>
+                    </li>
+                    <li>
+                        <strong>Imagem Amadora</strong>
+                        <span class="desc-text">Apresentar um visual desleixado que aniquila completamente a sua
+                            autoridade.</span>
+                    </li>
+                    <li>
+                        <strong>Tráfego Perdido</strong>
+                        <span class="desc-text">Investir em anúncios sem uma rota lógica de conversão imediata.</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Solution Box (Second - Stacked Underneath) -->
+            <div class="vertical-box solution-box-premium">
+                <div class="box-title-gold">
+                    <span>✓</span> A Nova Realidade (Soluções)
+                </div>
+                <p class="box-desc" style="color: #FFF; font-weight: 500;">Este guia de elite inverte totalmente as
+                    regras do jogo. Você deixa de ser um vendedor chato e passa a ser o profissional desejado:</p>
+                <ul class="list-items solution">
+                    <li>
+                        <strong>Posicionamento de Elite</strong>
+                        <span class="desc-text" style="color: rgba(255, 255, 255, 0.75);">Transmita uma autoridade de
+                            alto valor instantaneamente.</span>
+                    </li>
+                    <li>
+                        <strong>Desejo Inabalável</strong>
+                        <span class="desc-text" style="color: rgba(255, 255, 255, 0.75);">Faça o cliente sentir urgência
+                            lógica em adquirir o seu produto.</span>
+                    </li>
+                    <li>
+                        <strong>Anúncios Imbatíveis</strong>
+                        <span class="desc-text" style="color: rgba(255, 255, 255, 0.75);">Prenda a atenção do utilizador
+                            nos primeiros 3 segundos de scroll.</span>
+                    </li>
+                    <li>
+                        <strong>Tráfego Lucrativo</strong>
+                        <span class="desc-text" style="color: rgba(255, 255, 255, 0.75);">Encaminhe leads prontas a
+                            comprar direto ao seu WhatsApp.</span>
+                    </li>
+                </ul>
+
+            </div>
+
+            <!-- Solution Middle CTA with ultra strong copy -->
+            <div class="mid-cta-area">
+                <p>Pronto para dominar o seu posicionamento?</p>
+                <button onclick="openCheckoutModal()" class="btn btn-gold">
+                    🚀 SIM! QUERO DOMINAR O MEU MERCADO ➔
+                </button>
+            </div>
+        </section>
+
+    </div><!-- end container -->
+
+    <!-- Ticker Horizontal Intermediário (Nativamente 100% de largura para exibição perfeita no telemóvel) -->
+    <div class="ticker-middle">
+        <div class="ticker-middle-track">
+            <!-- Grupo 1 -->
+            <div class="ticker-item"><span class="gold-text">⚡</span> METODOLOGIA COMPROVADA</div>
+            <div class="ticker-item"><span class="orange-text">💎</span> POSICIONAMENTO DE ELITE</div>
+            <div class="ticker-item"><span class="gold-text">📈</span> VENDA MAIS NO WHATSAPP</div>
+            <div class="ticker-item"><span class="orange-text">🛡️</span> CONTRA CÓPIA ACTIVO</div>
+            <div class="ticker-item"><span class="gold-text">🚀</span> ALCANCE O PRÓXIMO NÍVEL</div>
+            <!-- Grupo 2 (Duplicado para loop infinito perfeito e contínuo) -->
+            <div class="ticker-item"><span class="gold-text">⚡</span> METODOLOGIA COMPROVADA</div>
+            <div class="ticker-item"><span class="orange-text">💎</span> POSICIONAMENTO DE ELITE</div>
+            <div class="ticker-item"><span class="gold-text">📈</span> VENDA MAIS NO WHATSAPP</div>
+            <div class="ticker-item"><span class="orange-text">🛡️</span> CONTRA CÓPIA ACTIVO</div>
+            <div class="ticker-item"><span class="gold-text">🚀</span> ALCANCE O PRÓXIMO NÍVEL</div>
+        </div>
+    </div>
+
+    <!-- MAIN WRAPPER (Re-aberto para manter o footer e demais elementos perfeitamente centralizados) -->
+    <div class="container">
+
+
+        <!-- ===== CHECKOUT MODAL ===== -->
+        <div id="checkout-modal" class="modal-overlay" onclick="handleOverlayClick(event)">
+            <div class="modal-box" id="modal-inner"
+                style="background: rgba(13, 13, 13, 0.85); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(212, 175, 55, 0.15); border-radius: 24px; padding: 32px 24px 24px; width: 96%; max-width: 420px; box-shadow: 0 30px 80px rgba(0,0,0,0.8), 0 0 40px rgba(212,175,55,0.03); margin: auto;">
+                <button class="modal-close" onclick="closeCheckoutModal()" title="Fechar">&#x2715;</button>
+
+                <!-- Header -->
+                <div style="text-align:center;margin-bottom:22px;">
+                    <div
+                        style="display:inline-flex; align-items:center; gap:6px; background:rgba(212,175,55,0.08); border:1px solid rgba(212,175,55,0.2); padding:5px 12px; border-radius:50px; font-size:0.62rem; font-weight:700; color:var(--gold); letter-spacing:1.5px; text-transform:uppercase; margin-bottom:12px; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+                        🔒 COMPRA SEGURA
+                    </div>
+                    <h2
+                        style="font-size:1.35rem;font-weight:900;text-transform:uppercase;margin-bottom:2px;letter-spacing:0.5px;color:#FFF;">
+                        Garantir Acesso</h2>
+                    <div
+                        style="font-size:2.2rem;font-weight:900;color:var(--gold);letter-spacing:-0.5px;margin-top:2px;">
+                        2.490 <span style="font-size:1.05rem;font-weight:600;color:#AAA;letter-spacing:0;">Kz</span>
+                    </div>
+                </div>
+
+                <!-- Divider -->
+                <div
+                    style="height:1px;background:linear-gradient(90deg,transparent,rgba(212,175,55,0.2),transparent);margin-bottom:20px;">
+                </div>
+
+                <!-- Payment Tabs (iOS / Stripe Segmented Style) -->
+                <div class="pay-tabs-container">
+                    <button id="tab-express" class="pay-tab active-tab" onclick="selectPayMethod('express')">
+                        ⚡ Express
+                    </button>
+                    <button id="tab-paypay" class="pay-tab" onclick="selectPayMethod('paypay')">
+                        🟠 PayPay
+                    </button>
+                </div>
+
+                <!-- Express Number Card (Premium Credit Card Glow Visual) -->
+                <div id="card-express"
+                    style="background: linear-gradient(135deg, rgba(255, 94, 0, 0.08) 0%, rgba(255, 94, 0, 0.02) 100%); border: 1px solid rgba(255, 135, 55, 0.25); border-radius: 14px; padding: 16px; margin-bottom: 20px; box-shadow: 0 8px 24px rgba(255, 94, 0, 0.04);">
+                    <div
+                        style="font-size:0.6rem;text-transform:uppercase;color:#888;margin-bottom:6px;letter-spacing:1px;font-weight:700;">
+                        Número de Conta Express</div>
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+                        <div id="num-express"
+                            style="font-size:1.45rem;font-weight:900;color:#FF8737;letter-spacing:2px;font-family:'Outfit',sans-serif;">
+                            925 109 868</div>
+                        <button onclick="copyText('num-express','Número copiado!')"
+                            style="background:#FF8737;border:none;color:#000;padding:6px 14px;border-radius:8px;font-size:0.75rem;font-weight:800;cursor:pointer;transition:0.2s;box-shadow:0 4px 12px rgba(255,135,55,0.35);"
+                            onmouseover="this.style.transform='scale(1.05)'"
+                            onmouseout="this.style.transform='scale(1)'">
+                            Copiar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- PayPay Payment Details Card -->
+                <div id="card-paypay"
+                    style="background: linear-gradient(135deg, rgba(212, 175, 55, 0.06) 0%, rgba(212, 175, 55, 0.01) 100%); border: 1px dashed rgba(212, 175, 55, 0.3); border-radius: 14px; padding: 16px; margin-bottom: 20px; box-shadow: 0 8px 24px rgba(212, 175, 55, 0.04); display:none;">
+
+                    <!-- Entidade -->
+                    <div
+                        style="margin-bottom:12px;border-bottom:1px dashed rgba(212, 175, 55, 0.12);padding-bottom:12px;">
+                        <div
+                            style="font-size:0.6rem;text-transform:uppercase;color:#888;margin-bottom:6px;letter-spacing:1px;font-weight:700;">
+                            Entidade PayPay</div>
+                        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+                            <div id="ent-paypay"
+                                style="font-size:1.3rem;font-weight:900;color:var(--gold);letter-spacing:2px;font-family:'Outfit',sans-serif;">
+                                10116</div>
+                            <button onclick="copyText('ent-paypay','Entidade copiada!')"
+                                style="background:var(--gold);border:none;color:#000;padding:5px 12px;border-radius:8px;font-size:0.72rem;font-weight:800;cursor:pointer;transition:0.2s;box-shadow:0 4px 12px rgba(212,175,55,0.3);"
+                                onmouseover="this.style.transform='scale(1.05)'"
+                                onmouseout="this.style.transform='scale(1)'">
+                                Copiar
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Referência -->
+                    <div>
+                        <div
+                            style="font-size:0.6rem;text-transform:uppercase;color:#888;margin-bottom:6px;letter-spacing:1px;font-weight:700;">
+                            Referência (Número)</div>
+                        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+                            <div id="ref-paypay"
+                                style="font-size:1.3rem;font-weight:900;color:var(--gold);letter-spacing:2px;font-family:'Outfit',sans-serif;">
+                                931 289 088</div>
+                            <button onclick="copyText('ref-paypay','Referência copiada!')"
+                                style="background:var(--gold);border:none;color:#000;padding:5px 12px;border-radius:8px;font-size:0.72rem;font-weight:800;cursor:pointer;transition:0.2s;box-shadow:0 4px 12px rgba(212,175,55,0.3);"
+                                onmouseover="this.style.transform='scale(1.05)'"
+                                onmouseout="this.style.transform='scale(1)'">
+                                Copiar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Buyer Details Form Inputs (Styled by premium verification-input class) -->
+                <div style="margin-bottom:14px;">
+                    <input type="text" id="client-name" class="verification-input" placeholder="Seu nome completo">
+                    <input type="tel" id="client-whatsapp" class="verification-input"
+                        placeholder="Seu WhatsApp (Ex: 923000000)">
+                </div>
+
+                <!-- Upload Zone (Advanced Secure Drag & Drop Port Visual) -->
+                <div id="upload-zone" onclick="document.getElementById('receipt-file').click()"
+                    style="border: 2px dashed rgba(212, 175, 55, 0.25); background: rgba(212, 175, 55, 0.01); border-radius: 14px; padding: 18px 14px; text-align: center; cursor: pointer; margin-bottom: 20px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;"
+                    onmouseover="this.style.borderColor='var(--gold)'; this.style.background='rgba(212, 175, 55, 0.03)'"
+                    onmouseout="if(!this.classList.contains('uploaded')){ this.style.borderColor='rgba(212, 175, 55, 0.25)'; this.style.background='rgba(212, 175, 55, 0.01)' }">
+                    <input type="file" id="receipt-file" accept="image/*,application/pdf"
+                        onchange="handleFileSelected()" style="display:none;">
+
+                    <div id="upload-icon-wrapper" style="font-size: 1.5rem; color: var(--gold); transition: 0.3s;">📤
+                    </div>
+                    <span id="file-label" style="font-size:0.8rem;color:#888;font-weight:500;">
+                        Carregar comprovativo (imagem ou PDF)
+                    </span>
+                </div>
+
+                <!-- CTA inside modal -->
+                <button id="main-checkout-btn" class="btn btn-gold" onclick="startAIVerification()"
+                    style="width:100%;padding:13px;font-size:0.9rem;border-radius:10px;">
+                    ⚡ AUTENTICAR COMPROVATIVO & LIBERAR EBOOK ⚡
+                </button>
+            </div>
+        </div>
+
+        <!-- ===== AI VERIFICATION MODAL ===== -->
+        <div id="ai-modal" class="modal-overlay" onclick="handleAIOverlayClick(event)">
+            <div class="modal-box" id="ai-modal-inner"
+                style="background: rgba(13, 13, 13, 0.85); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(212, 175, 55, 0.15); border-radius: 24px; padding: 32px 24px 24px; width: 96%; max-width: 420px; box-shadow: 0 30px 80px rgba(0,0,0,0.8), 0 0 40px rgba(212,175,55,0.03); margin-top: auto; margin-bottom: auto; flex-shrink: 0;">
+                <button class="modal-close" onclick="closeAIModal()" title="Fechar">&#x2715;</button>
+
+                <!-- AI Panel -->
+                <div id="ai-verification-panel"
+                    style="display:none;margin-bottom:12px;background:rgba(0,0,0,0.4);border:1px solid rgba(212,175,55,0.12);border-radius:8px;padding:12px;">
+                    <div
+                        style="font-size:0.72rem;font-weight:700;color:var(--gold);text-align:center;margin-bottom:10px;letter-spacing:2px;text-transform:uppercase;">
+                        &#129302; IA a verificar...</div>
+                    <div class="ai-step" id="step-1"><span class="ai-step-icon">&#9203;</span><span
+                            class="ai-step-text">Autenticidade do ficheiro...</span></div>
+                    <div class="ai-step" id="step-2" style="opacity:0.3;"><span class="ai-step-icon">&#9203;</span><span
+                            class="ai-step-text">Valor do pagamento...</span></div>
+                    <div class="ai-step" id="step-3" style="opacity:0.3;"><span class="ai-step-icon">&#9203;</span><span
+                            class="ai-step-text">Data do comprovativo...</span></div>
+                    <div class="ai-step" id="step-4" style="opacity:0.3;"><span class="ai-step-icon">&#9203;</span><span
+                            class="ai-step-text">Validacao final...</span></div>
+                    <div
+                        style="margin-top:10px;background:rgba(255,255,255,0.05);border-radius:50px;height:5px;overflow:hidden;">
+                        <div id="ai-progress-bar"
+                            style="height:100%;width:0%;background:linear-gradient(90deg,#FF8737,var(--gold));border-radius:50px;transition:width 0.8s ease;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Result -->
+                <div id="ai-result-panel"
+                    style="display:none;margin-bottom:12px;text-align:center;padding:14px;border-radius:10px;"></div>
+
+                <a id="access-btn" class="btn btn-access"
+                    style="display:none;width:100%;padding:13px;font-size:0.9rem;border-radius:10px;margin-top:8px;text-decoration:none;text-align:center;">
+                    📥 DESCARREGAR EBOOK COM MARCA D'ÁGUA ➔
+                </a>
+                
+                <!-- Retry / Blocked Button -->
+                <button id="ai-retry-btn" class="btn btn-gold" onclick="retryAIVerification()"
+                    style="display:none;width:100%;padding:13px;font-size:0.9rem;border-radius:10px;">
+                    <span>TENTAR NOVAMENTE</span>
+                </button>
+            </div>
+        </div>
+
+
+
+        <div id="toast" class="toast">
+            <span id="toast-icon">&#128226;</span>
+            <span id="toast-text">Texto copiado!</span>
+        </div>
+
+        <script>
+            function openCheckoutModal() {
+                const m = document.getElementById('checkout-modal');
+                m.classList.add('open');
+                document.body.style.overflow = 'hidden';
+                setTimeout(() => m.querySelector('.modal-box').scrollTo(0, 0), 50);
+            }
+            function closeCheckoutModal() {
+                document.getElementById('checkout-modal').classList.remove('open');
+                if(!document.getElementById('ai-modal').classList.contains('open')) {
+                    document.body.style.overflow = '';
+                }
+            }
+            function handleOverlayClick(e) {
+                if (e.target === document.getElementById('checkout-modal')) closeCheckoutModal();
+            }
+            function openAIModal() {
+                closeCheckoutModal();
+                const m = document.getElementById('ai-modal');
+                m.classList.add('open');
+                document.body.style.overflow = 'hidden';
+            }
+            function closeAIModal() {
+                document.getElementById('ai-modal').classList.remove('open');
+                document.body.style.overflow = '';
+            }
+            function handleAIOverlayClick(e) {
+                if (e.target === document.getElementById('ai-modal')) closeAIModal();
+            }
+            function retryAIVerification() {
+                closeAIModal();
+                openCheckoutModal();
+            }
+
+
+            function copyText(id, msg) {
+                navigator.clipboard.writeText(document.getElementById(id).textContent.replace(/\s/g, ''));
+                showToast('&#128188;', msg);
+            }
+            function showToast(icon, text) {
+                const t = document.getElementById('toast');
+                document.getElementById('toast-icon').innerHTML = icon;
+                document.getElementById('toast-text').textContent = text;
+                t.classList.add('show');
+                setTimeout(() => t.classList.remove('show'), 2800);
+            }
+            function selectPayMethod(m) {
+                const e = m === 'express';
+                document.getElementById('tab-express').classList.toggle('active-tab', e);
+                document.getElementById('tab-paypay').classList.toggle('active-tab', !e);
+                document.getElementById('card-express').style.display = e ? 'block' : 'none';
+                document.getElementById('card-paypay').style.display = e ? 'none' : 'block';
+            }
+            function handleFileSelected() {
+                const f = document.getElementById('receipt-file').files[0];
+                const lbl = document.getElementById('file-label');
+                const zone = document.getElementById('upload-zone');
+                const icon = document.getElementById('upload-icon-wrapper');
+                if (f) {
+                    lbl.innerHTML = '<strong>' + f.name + '</strong> selecionado!';
+                    lbl.style.color = 'var(--gold)';
+                    zone.style.borderColor = 'var(--gold)';
+                    zone.style.background = 'rgba(212,175,55,0.05)';
+                    zone.classList.add('uploaded');
+                    if (icon) {
+                        icon.innerHTML = '✅';
+                        icon.style.color = 'var(--gold)';
+                    }
+                }
+            }
+            // Motor de Extração removido do cliente (mudou para o servidor)
+
+            function animateStep(n, delay, cb) { setTimeout(() => { const s = document.getElementById('step-' + n); s.style.opacity = '1'; s.querySelector('.ai-step-text').style.color = '#FFF'; setTimeout(() => { s.querySelector('.ai-step-icon').textContent = 'OK'; s.querySelector('.ai-step-text').style.color = 'var(--gold)'; document.getElementById('ai-progress-bar').style.width = (n * 25) + '%'; if (cb) cb(); }, 900); }, delay); }
+
+            function downloadBase64PDF(base64Data, filename) {
+                const linkSource = `data:application/pdf;base64,${base64Data}`;
+                const downloadLink = document.createElement("a");
+                downloadLink.href = linkSource;
+                downloadLink.download = filename;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+            }
+
+            function resetUploadZone() {
+                document.getElementById('receipt-file').value = "";
+                const lbl = document.getElementById('file-label');
+                const zone = document.getElementById('upload-zone');
+                const icon = document.getElementById('upload-icon-wrapper');
+
+                lbl.innerHTML = 'Carregar comprovativo (imagem ou PDF)';
+                lbl.style.color = '#888';
+                zone.style.borderColor = 'rgba(212, 175, 55, 0.25)';
+                zone.style.background = 'rgba(212, 175, 55, 0.01)';
+                zone.classList.remove('uploaded');
+                if (icon) {
+                    icon.innerHTML = '📤';
+                    icon.style.color = 'var(--gold)';
+                }
+            }
+
+            function launchConfetti() {
+                const colors = ['#FFE082', '#D4AF37', '#FF5252', '#00E676', '#29B6F6'];
+                for (let i = 0; i < 70; i++) {
+                    const c = document.createElement('div');
+                    c.style.position = 'fixed';
+                    c.style.width = Math.random() * 8 + 4 + 'px';
+                    c.style.height = Math.random() * 8 + 4 + 'px';
+                    c.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    c.style.left = Math.random() * 100 + 'vw';
+                    c.style.top = '-10px';
+                    c.style.borderRadius = '50%';
+                    c.style.zIndex = '999999';
+                    c.style.transform = 'rotate(' + Math.random() * 360 + 'deg)';
+                    document.body.appendChild(c);
+
+                    const duration = Math.random() * 2000 + 1500;
+                    c.animate([
+                        { transform: 'translate3d(0, 0, 0) rotate(0deg)', opacity: 1 },
+                        { transform: 'translate3d(' + (Math.random() * 200 - 100) + 'px, 100vh, 0) rotate(' + Math.random() * 720 + 'deg)', opacity: 0 }
+                    ], {
+                        duration: duration,
+                        easing: 'cubic-bezier(0.1, 0.8, 0.3, 1)'
+                    });
+                    setTimeout(() => c.remove(), duration);
+                }
+            }
+
+            function showResult(result, name, whatsapp) {
+                document.getElementById('ai-verification-panel').style.display = 'none';
+                const panel = document.getElementById('ai-result-panel');
+                panel.style.display = 'block';
+
+                if (result.ok) {
+                    // Sucesso no Servidor
+                    launchConfetti();
+
+                    panel.style.background = 'rgba(0,200,83,0.08)';
+                    panel.style.border = '1px solid rgba(0,200,83,0.3)';
+                    panel.innerHTML = `
+                        <div style="font-size:2.8rem;margin-bottom:8px;animation: pulse-red 1.5s infinite;">🎉</div>
+                        <div style="font-size:1.05rem;font-weight:900;color:#00E676;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;">MUITOS PARABÉNS, ${name.toUpperCase()}!</div>
+                        <div style="font-size:0.85rem;color:#FFF;font-weight:600;margin-bottom:12px;line-height:1.5;">
+                            O seu pagamento foi validado com absoluto sucesso pela nossa IA no Servidor! 
+                            Você acaba de dar o passo mais importante para se tornar um profissional de elite e dominar o mercado comercial.
+                        </div>
+                        <div style="font-size:0.78rem;color:#BBB;line-height:1.4;">
+                            O seu PDF personalizado com marca d'água oficial está pronto! 
+                            Clique no botão abaixo para descarregar e começar a sua transformação agora mesmo.
+                        </div>
+                    `;
+
+                    const btn = document.getElementById('access-btn');
+                    btn.style.display = 'inline-flex';
+
+                    btn.onclick = function (e) {
+                        e.preventDefault();
+                        launchConfetti();
+                        downloadBase64PDF(result.pdfBase64, result.filename);
+
+                        setTimeout(() => {
+                            const selectedMethod = document.getElementById('tab-express').classList.contains('active-tab') ? 'Express' : 'PayPay';
+                            const text = encodeURIComponent(
+                                "Olá Abel Dengue!\n\n" +
+                                "Acabei de descarregar o eBook 'Como Fazer o Cliente Sentir que Precisa de Você' com marca d'água! 🎉\n\n" +
+                                "👤 Nome: " + name + "\n" +
+                                "🟢 WhatsApp: " + whatsapp + "\n" +
+                                "💳 Método de Pagamento: " + selectedMethod + "\n" +
+                                "🛡️ Chave de Acesso: " + result.token + "\n\n" +
+                                "Por favor, guarde na sua base de dados o meu comprovativo!"
+                            );
+                            window.open("https://wa.me/244931289088?text=" + text, '_blank');
+                        }, 1500);
+                    };
+
+                    showToast('🎉', 'Comprovativo aprovado! Descarregue o seu livro.');
+                    setTimeout(() => btn.scrollIntoView({ behavior: 'smooth', block: 'center' }), 400);
+                } else {
+                    panel.style.background = 'rgba(255,50,50,0.04)';
+                    panel.style.border = '1px solid rgba(255,50,50,0.25)';
+
+                    if (result.blocked) {
+                        panel.innerHTML = '<div style="font-size:2rem;margin-bottom:6px;">🚫</div><div style="font-size:0.95rem;font-weight:800;color:#FF5252;margin-bottom:4px;">ACESSO BLOQUEADO PELO SERVIDOR</div><div style="font-size:0.75rem;color:#AAA;">' + result.reason + '</div>';
+
+                        const btn = document.getElementById('ai-retry-btn');
+                        btn.style.display = 'inline-flex';
+                        btn.querySelector('span').textContent = 'BLOQUEADO POR ' + result.timeLeft + ' MIN';
+                        btn.disabled = true;
+                        btn.style.opacity = '0.5';
+
+                        resetUploadZone();
+                        showToast('🚫', 'Submissão suspensa temporariamente.');
+                    } else {
+                        const details = result.details || {
+                            format: { ok: false, label: 'Assinatura do Ficheiro', value: 'Falha crítica de integridade' },
+                            recipient: { ok: false, label: 'Destinatário Abel Dengue', value: 'Dados do beneficiário ausentes' },
+                            amount: { ok: false, label: 'Valor da Transação', value: 'Não compatível' },
+                            date: { ok: false, label: 'Data e Hora da Operação', value: 'Data inválida ou não encontrada' },
+                            terms: { ok: false, label: 'Tipo de Transação', value: 'Dados bancários não detetados' }
+                        };
+
+                        let detailsHtml = '<div style="margin-top:12px;background:rgba(0,0,0,0.45);border-radius:10px;padding:12px;text-align:left;border:1px solid rgba(255,255,255,0.05);">';
+                        detailsHtml += '<div style="font-size:0.68rem;text-transform:uppercase;color:#888;margin-bottom:10px;font-weight:700;letter-spacing:1px;border-bottom:1px solid rgba(255,255,255,0.08);padding-bottom:6px;">🔬 Relatório Técnico de Varredura do Servidor</div>';
+
+                        for (const key in details) {
+                            const item = details[key];
+                            const color = item.ok ? '#00E676' : '#FF5252';
+                            const icon = item.ok ? '✓' : '✗';
+                            detailsHtml += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:0.75rem;gap:10px;">' +
+                                '<span style="color:#DDD;font-weight:500;">' + item.label + ':</span>' +
+                                '<span style="color:' + color + ';font-weight:700;text-align:right;font-size:0.72rem;">' + icon + ' ' + item.value + '</span>' +
+                                '</div>';
+                        }
+                        detailsHtml += '</div>';
+
+                        panel.innerHTML = '<div style="font-size:1.8rem;margin-bottom:6px;">❌</div>' +
+                            '<div style="font-size:0.95rem;font-weight:900;color:#FF5252;margin-bottom:4px;letter-spacing:0.5px;">COMPROVATIVO REJEITADO</div>' +
+                            '<div style="font-size:0.75rem;color:#AAA;line-height:1.4;">' + result.reason + '</div>' +
+                            detailsHtml;
+
+                        const btn = document.getElementById('ai-retry-btn');
+                        btn.style.display = 'inline-flex';
+                        btn.querySelector('span').textContent = 'TENTAR NOVAMENTE';
+                        btn.disabled = false;
+                        btn.style.opacity = '1';
+
+                        resetUploadZone();
+                        showToast('❌', 'Comprovativo rejeitado pelo servidor.');
+                    }
+                }
+            }
+
+            async function startAIVerification() {
+                const name = document.getElementById('client-name').value.trim();
+                const whatsapp = document.getElementById('client-whatsapp').value.trim();
+                const fi = document.getElementById('receipt-file');
+
+                if (!name) {
+                    showToast('Aviso', 'Insira o seu nome!');
+                    document.getElementById('client-name').focus();
+                    return;
+                }
+                if (!whatsapp || whatsapp.length < 9) {
+                    showToast('Aviso', 'Insira um WhatsApp válido!');
+                    document.getElementById('client-whatsapp').focus();
+                    return;
+                }
+                if (!fi.files.length) {
+                    showToast('Aviso', 'Selecione o comprovativo!');
+                    return;
+                }
+
+                const file = fi.files[0];
+
+                openAIModal();
+                document.getElementById('ai-result-panel').style.display = 'none';
+                document.getElementById('ai-verification-panel').style.display = 'block';
+                document.getElementById('access-btn').style.display = 'none';
+                document.getElementById('ai-retry-btn').style.display = 'none';
+
+                const steps = [
+                    document.getElementById('step-1'),
+                    document.getElementById('step-2'),
+                    document.getElementById('step-3'),
+                    document.getElementById('step-4')
+                ];
+
+                steps.forEach((s, idx) => {
+                    s.querySelector('.ai-step-icon').textContent = '...';
+                    s.style.opacity = idx === 0 ? '1' : '0.3';
+                    s.querySelector('.ai-step-text').style.color = '#888';
+                });
+                document.getElementById('ai-progress-bar').style.width = '0%';
+
+                const markStepSuccess = (num, percent) => {
+                    const s = document.getElementById('step-' + num);
+                    s.style.opacity = '1';
+                    s.querySelector('.ai-step-text').style.color = '#FFF';
+                    s.querySelector('.ai-step-icon').textContent = '✓';
+                    s.querySelector('.ai-step-icon').style.color = 'var(--gold)';
+                    s.querySelector('.ai-step-text').style.color = 'var(--gold)';
+                    document.getElementById('ai-progress-bar').style.width = percent + '%';
+
+                    if (num < 4) {
+                        const next = document.getElementById('step-' + (num + 1));
+                        next.style.opacity = '1';
+                        next.querySelector('.ai-step-text').style.color = '#FFF';
+                    }
+                };
+
+                // Enviar para o Backend seguro
+                try {
+                    const formData = new FormData();
+                    formData.append('name', name);
+                    formData.append('whatsapp', whatsapp);
+                    formData.append('receipt', file);
+
+                    // Animações visuais (fake) para experiência do utilizador
+                    setTimeout(() => markStepSuccess(1, 25), 600);
+                    setTimeout(() => markStepSuccess(2, 50), 1200);
+
+                    // URL da API. Quando hospedar o seu backend (por exemplo no Render ou Vercel),
+                    // basta garantir que o frontend aponta para a mesma raiz, ou colocar o URL completo aqui (ex: https://meu-backend.onrender.com/api/verify-receipt)
+                    const apiUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:' 
+                        ? 'http://localhost:3000/api/verify-receipt' 
+                        : '/api/verify-receipt';
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const result = await response.json();
+
+                    setTimeout(() => markStepSuccess(3, 75), 1800);
+                    setTimeout(() => markStepSuccess(4, 100), 2200);
+
+                    setTimeout(() => {
+                        showResult(result, name, whatsapp);
+                    }, 2600);
+
+                } catch (error) {
+                    console.error("Erro na comunicação com o servidor:", error);
+                    showResult({
+                        ok: false,
+                        reason: 'Não foi possível contactar o servidor seguro. Verifique a sua ligação ou tente mais tarde.'
+                    }, name, whatsapp);
+                }
+            }
+
+        </script>
+</body>
+
+</html>
