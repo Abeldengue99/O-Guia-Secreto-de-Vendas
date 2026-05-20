@@ -12,6 +12,11 @@ const sharp = require('sharp');
 const app = express();
 const port = process.env.PORT || 3000;
 
+// ==================== CONFIGURAÇÃO ADMIN ====================
+const ADMIN_PASSWORD = '3A11199903052025';
+const PRICE_PER_SALE = 2490; // Preço em Kz
+
+// ==================== MIDDLEWARE ====================
 app.get('/', (req, res) => {
     res.send('O cérebro da Inteligência Artificial está online e a funcionar! 🚀');
 });
@@ -19,14 +24,20 @@ app.get('/', (req, res) => {
 app.use(cors());
 app.use(express.json());
 
-// Set up temporary storage for uploaded receipts
-const upload = multer({ dest: 'uploads/' });
+// ==================== STORAGE CONFIG ====================
+// Guardar comprovativos em pastas organizadas
+const uploadsDir = path.join(__dirname, 'uploads');
+const approvedDir = path.join(uploadsDir, 'aprovados');
+const rejectedDir = path.join(uploadsDir, 'rejeitados');
 
-// In-memory store for rate limiting by IP (simple anti-spam)
-const failedAttempts = {};
-const blockList = {};
+// Criar directórios se não existirem
+[uploadsDir, approvedDir, rejectedDir].forEach(dir => {
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+});
 
-// Database in-memory e em arquivo para comprovativos usados (Anti-Duplicação)
+const upload = multer({ dest: uploadsDir });
+
+// ==================== BASE DE DADOS: COMPROVATIVOS USADOS ====================
 const DB_FILE = path.join(__dirname, 'used_receipts.json');
 let usedReceipts = new Set();
 if (fs.existsSync(DB_FILE)) {
@@ -35,6 +46,35 @@ if (fs.existsSync(DB_FILE)) {
     } catch(e) {}
 }
 
+// ==================== BASE DE DADOS: VENDAS ====================
+const SALES_FILE = path.join(__dirname, 'sales.json');
+let salesDB = [];
+if (fs.existsSync(SALES_FILE)) {
+    try {
+        salesDB = JSON.parse(fs.readFileSync(SALES_FILE, 'utf8'));
+    } catch(e) { salesDB = []; }
+}
+
+function saveSalesDB() {
+    fs.writeFileSync(SALES_FILE, JSON.stringify(salesDB, null, 2));
+}
+
+function addSale(saleData) {
+    const sale = {
+        id: 'SALE-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase(),
+        timestamp: new Date().toISOString(),
+        ...saleData
+    };
+    salesDB.push(sale);
+    saveSalesDB();
+    return sale;
+}
+
+// ==================== RATE LIMITING ====================
+const failedAttempts = {};
+const blockList = {};
+
+// ==================== FUNÇÕES UTILITÁRIAS ====================
 function getFileHash(filePath) {
     const fileBuffer = fs.readFileSync(filePath);
     const hashSum = crypto.createHash('sha256');
@@ -42,7 +82,6 @@ function getFileHash(filePath) {
     return hashSum.digest('hex');
 }
 
-// Evaluate Logic ported from Frontend
 function evaluateReceiptData(text, originalName, fileSize) {
     const cleanText = text.replace(/[\s\.\-\,]+/g, '').toLowerCase();
     const originalText = text.toLowerCase();
@@ -63,7 +102,6 @@ function evaluateReceiptData(text, originalName, fileSize) {
     const mm = String(today.getMonth() + 1).padStart(2, '0');
     const yyyy = today.getFullYear();
     
-    // Possíveis formatos que o banco pode apresentar
     const dateFormats = [
         `${dd}/${mm}/${yyyy}`,
         `${dd}-${mm}-${yyyy}`,
@@ -73,22 +111,19 @@ function evaluateReceiptData(text, originalName, fileSize) {
         'hoje', 'today'
     ];
     
-    // Se a data formatada sem barras/traços existir no texto limpo, o OCR leu corretamente os números da data
     const dateOk = dateFormats.some(df => cleanText.includes(df.replace(/[\/\-]/g, '')) || originalText.includes(df));
     const dateText = dateOk ? `✓ Data Válida (Pagamento de Hoje: ${dd}/${mm}/${yyyy})` : '✗ Data Inválida (Apenas pagamentos feitos hoje são aceites)';
 
-    // 4. Verificação de Conclusão de Pagamento (Evita capturas de ecrã antes de concluir a transferência)
+    // 4. Verificação de Conclusão de Pagamento
     const successTerms = ['sucesso', 'concluid', 'concluíd', 'realizada', 'estado:sucesso', 'comprovativo', 'recibo', 'transferencia', 'transferência'];
     const successOk = successTerms.some(term => cleanText.includes(term.replace(/[\s\:]/g, '')) || originalText.includes(term));
     const termsText = successOk ? '✓ Transação Concluída com Sucesso' : '✗ Transação Incompleta (Aguardando conclusão)';
 
-    // Anti-fraude básico (Nomes de arquivos suspeitos)
+    // Anti-fraude básico
     const bad = ['fake', 'test', 'sample', 'demo', 'placeholder', 'lorem', 'comprovativo_falso', 'falso'];
     const fileNameLower = originalName.toLowerCase();
     let nameSuspect = bad.some(word => fileNameLower.includes(word));
 
-    // A VALIDAÇÃO ESTABELECIDA PELO UTILIZADOR:
-    // DEVE validar estritamente se o destinatário, a data (de hoje), o valor E O SUCESSO DO PAGAMENTO estiverem corretos.
     const isGenuine = !nameSuspect && recipientOk && dateOk && amountOk && successOk;
 
     return {
@@ -111,6 +146,55 @@ function generateToken(name, whatsapp) {
     return 'EBOOK-' + Math.abs(h).toString(36).toUpperCase() + '-' + Date.now().toString(36).toUpperCase();
 }
 
+// Mover ficheiro para pasta organizada
+function moveReceiptFile(tempPath, targetDir, saleId, originalName) {
+    const ext = path.extname(originalName) || '.png';
+    const newName = saleId + ext;
+    const newPath = path.join(targetDir, newName);
+    try {
+        fs.copyFileSync(tempPath, newPath);
+        fs.unlinkSync(tempPath);
+        return newName;
+    } catch(e) {
+        console.error('Erro ao mover ficheiro:', e.message);
+        return null;
+    }
+}
+
+// Gerar PDF do eBook com marca d'água
+async function generateEbookPDF(name, whatsapp, token) {
+    const originalPdfPath = path.join(__dirname, 'assets', 'ebook_original.pdf');
+    const existingPdfBytes = fs.readFileSync(originalPdfPath);
+    const pdfDoc = await PDFDocument.load(existingPdfBytes);
+    const pages = pdfDoc.getPages();
+
+    const stamp = name.toUpperCase() + " - LICENCA PESSOAL EXCLUSIVA - WHATSAPP: " + whatsapp + " - TOKEN: " + token;
+
+    for (const page of pages) {
+        const { width, height } = page.getSize();
+        page.drawText(stamp, {
+            x: width / 12,
+            y: height / 4,
+            size: 11,
+            rotate: degrees(45),
+            color: rgb(0.83, 0.68, 0.21),
+            opacity: 0.16,
+        });
+        page.drawText(stamp, {
+            x: width / 12,
+            y: (3 * height) / 4,
+            size: 11,
+            rotate: degrees(45),
+            color: rgb(0.83, 0.68, 0.21),
+            opacity: 0.16,
+        });
+    }
+
+    const pdfBytes = await pdfDoc.save();
+    return Buffer.from(pdfBytes).toString('base64');
+}
+
+// ==================== ROTA PRINCIPAL: VERIFICAR COMPROVATIVO ====================
 app.post('/api/verify-receipt', upload.single('receipt'), async (req, res) => {
     const ip = req.ip || req.connection.remoteAddress;
 
@@ -133,6 +217,9 @@ app.post('/api/verify-receipt', upload.single('receipt'), async (req, res) => {
             return res.status(400).json({ ok: false, reason: 'Dados incompletos.' });
         }
 
+        // Método de pagamento (enviado pelo frontend)
+        const paymentMethod = req.body.paymentMethod || 'Desconhecido';
+
         // Anti-Fraud: Duplicate Image Check (Hash Verification)
         const fileHash = getFileHash(file.path);
         if (usedReceipts.has(fileHash)) {
@@ -141,7 +228,21 @@ app.post('/api/verify-receipt', upload.single('receipt'), async (req, res) => {
                 blockList[ip] = Date.now() + 3600000;
                 delete failedAttempts[ip];
             }
-            try { fs.unlinkSync(file.path); } catch(e) {}
+
+            // Gravar tentativa de fraude na base de dados
+            const saleId = 'FRAUD-' + Date.now().toString(36).toUpperCase();
+            const receiptFile = moveReceiptFile(file.path, rejectedDir, saleId, file.originalname);
+            addSale({
+                nome: name,
+                whatsapp: whatsapp,
+                metodo_pagamento: paymentMethod,
+                status: 'fraude',
+                motivo: 'Comprovativo duplicado (já utilizado anteriormente)',
+                comprovativo: receiptFile,
+                ip: ip,
+                token: null
+            });
+
             return res.json({
                 ok: false,
                 reason: 'FRAUDE DETETADA: Este comprovativo já foi utilizado anteriormente no sistema.',
@@ -184,7 +285,7 @@ app.post('/api/verify-receipt', upload.single('receipt'), async (req, res) => {
                 const { data: { text } } = await Tesseract.recognize(ocrPath, 'por');
                 extractedText = text;
                 
-                // Limpar ficheiro temporário
+                // Limpar ficheiro temporário do enhanced
                 if (ocrPath === enhancedPath) {
                     try { fs.unlinkSync(enhancedPath); } catch(e) {}
                 }
@@ -202,14 +303,29 @@ app.post('/api/verify-receipt', upload.single('receipt'), async (req, res) => {
             // Increment failed attempts
             failedAttempts[ip] = (failedAttempts[ip] || 0) + 1;
             if (failedAttempts[ip] >= 3) {
-                blockList[ip] = Date.now() + 3600000; // block for 1 hour
+                blockList[ip] = Date.now() + 3600000;
                 delete failedAttempts[ip];
             }
+
+            // Gravar venda rejeitada na base de dados (mover comprovativo para pasta de rejeitados)
+            const saleId = 'REJ-' + Date.now().toString(36).toUpperCase();
+            const receiptFile = moveReceiptFile(file.path, rejectedDir, saleId, file.originalname);
+            addSale({
+                nome: name,
+                whatsapp: whatsapp,
+                metodo_pagamento: paymentMethod,
+                status: 'rejeitado',
+                motivo: validationResult.reason,
+                detalhes_validacao: validationResult.details,
+                comprovativo: receiptFile,
+                ip: ip,
+                token: null
+            });
+
             return res.json(validationResult);
         }
 
-        // On Success, generate PDF
-        // Reset attempts
+        // ==================== SUCESSO ====================
         delete failedAttempts[ip];
 
         // Registar Hash na Base de Dados para prevenir reutilização
@@ -217,39 +333,23 @@ app.post('/api/verify-receipt', upload.single('receipt'), async (req, res) => {
         fs.writeFileSync(DB_FILE, JSON.stringify([...usedReceipts]));
 
         const token = generateToken(name, whatsapp);
-        const originalPdfPath = path.join(__dirname, 'assets', 'ebook_original.pdf');
+        const base64Pdf = await generateEbookPDF(name, whatsapp, token);
+
+        // Mover comprovativo para pasta de aprovados
+        const saleId = 'APR-' + Date.now().toString(36).toUpperCase();
+        const receiptFile = moveReceiptFile(file.path, approvedDir, saleId, file.originalname);
         
-        const existingPdfBytes = fs.readFileSync(originalPdfPath);
-        const pdfDoc = await PDFDocument.load(existingPdfBytes);
-        const pages = pdfDoc.getPages();
-
-        const stamp = name.toUpperCase() + " - LICENCA PESSOAL EXCLUSIVA - WHATSAPP: " + whatsapp + " - TOKEN: " + token;
-
-        for (const page of pages) {
-            const { width, height } = page.getSize();
-            page.drawText(stamp, {
-                x: width / 12,
-                y: height / 4,
-                size: 11,
-                rotate: degrees(45),
-                color: rgb(0.83, 0.68, 0.21),
-                opacity: 0.16,
-            });
-            page.drawText(stamp, {
-                x: width / 12,
-                y: (3 * height) / 4,
-                size: 11,
-                rotate: degrees(45),
-                color: rgb(0.83, 0.68, 0.21),
-                opacity: 0.16,
-            });
-        }
-
-        const pdfBytes = await pdfDoc.save();
-        const base64Pdf = Buffer.from(pdfBytes).toString('base64');
-
-        // Cleanup temp file
-        fs.unlinkSync(file.path);
+        // Gravar venda aprovada na base de dados
+        addSale({
+            nome: name,
+            whatsapp: whatsapp,
+            metodo_pagamento: paymentMethod,
+            status: 'aprovado',
+            motivo: 'Aprovado automaticamente pela IA',
+            comprovativo: receiptFile,
+            ip: ip,
+            token: token
+        });
 
         return res.json({
             ok: true,
@@ -265,6 +365,211 @@ app.post('/api/verify-receipt', upload.single('receipt'), async (req, res) => {
     }
 });
 
+// ==================== MIDDLEWARE DE AUTENTICAÇÃO ADMIN ====================
+function adminAuth(req, res, next) {
+    const password = req.headers['x-admin-password'] || req.query.password;
+    if (password !== ADMIN_PASSWORD) {
+        return res.status(401).json({ ok: false, reason: 'Senha de administrador incorreta.' });
+    }
+    next();
+}
+
+// ==================== ROTAS ADMIN ====================
+
+// Login - verificar senha
+app.post('/api/admin/login', (req, res) => {
+    const { password } = req.body;
+    if (password === ADMIN_PASSWORD) {
+        return res.json({ ok: true });
+    }
+    return res.status(401).json({ ok: false, reason: 'Senha incorreta.' });
+});
+
+// Obter todas as vendas + estatísticas
+app.get('/api/admin/sales', adminAuth, (req, res) => {
+    const now = new Date();
+    const todayStr = now.toISOString().split('T')[0];
+
+    // Cálculos de estatísticas
+    const totalSales = salesDB.length;
+    const approved = salesDB.filter(s => s.status === 'aprovado');
+    const rejected = salesDB.filter(s => s.status === 'rejeitado');
+    const fraud = salesDB.filter(s => s.status === 'fraude');
+    const manualApproved = salesDB.filter(s => s.status === 'aprovado_manual');
+
+    const allApproved = [...approved, ...manualApproved];
+    const totalRevenue = allApproved.length * PRICE_PER_SALE;
+
+    // Vendas de hoje
+    const todaySales = salesDB.filter(s => s.timestamp && s.timestamp.startsWith(todayStr));
+    const todayApproved = todaySales.filter(s => s.status === 'aprovado' || s.status === 'aprovado_manual');
+    const todayRevenue = todayApproved.length * PRICE_PER_SALE;
+
+    // Vendas dos últimos 7 dias (para gráfico)
+    const last7Days = [];
+    for (let i = 6; i >= 0; i--) {
+        const d = new Date(now);
+        d.setDate(d.getDate() - i);
+        const dayStr = d.toISOString().split('T')[0];
+        const dayLabel = String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0');
+        const daySales = salesDB.filter(s => s.timestamp && s.timestamp.startsWith(dayStr));
+        const dayApproved = daySales.filter(s => s.status === 'aprovado' || s.status === 'aprovado_manual').length;
+        const dayRejected = daySales.filter(s => s.status === 'rejeitado' || s.status === 'fraude').length;
+        last7Days.push({ date: dayLabel, aprovadas: dayApproved, rejeitadas: dayRejected });
+    }
+
+    // Vendas dos últimos 30 dias (para gráfico mensal)
+    const last30Days = [];
+    for (let i = 29; i >= 0; i--) {
+        const d = new Date(now);
+        d.setDate(d.getDate() - i);
+        const dayStr = d.toISOString().split('T')[0];
+        const dayLabel = String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0');
+        const daySales = salesDB.filter(s => s.timestamp && s.timestamp.startsWith(dayStr));
+        const dayApproved = daySales.filter(s => s.status === 'aprovado' || s.status === 'aprovado_manual').length;
+        last30Days.push({ date: dayLabel, aprovadas: dayApproved });
+    }
+
+    // Taxa de conversão
+    const conversionRate = totalSales > 0 ? ((allApproved.length / totalSales) * 100).toFixed(1) : '0.0';
+
+    // Métodos de pagamento
+    const paymentMethods = {};
+    salesDB.forEach(s => {
+        const method = s.metodo_pagamento || 'Desconhecido';
+        if (!paymentMethods[method]) paymentMethods[method] = { total: 0, aprovadas: 0 };
+        paymentMethods[method].total++;
+        if (s.status === 'aprovado' || s.status === 'aprovado_manual') paymentMethods[method].aprovadas++;
+    });
+
+    return res.json({
+        ok: true,
+        stats: {
+            total_tentativas: totalSales,
+            total_aprovadas: allApproved.length,
+            total_rejeitadas: rejected.length,
+            total_fraude: fraud.length,
+            total_aprovadas_manual: manualApproved.length,
+            faturamento_total: totalRevenue,
+            faturamento_hoje: todayRevenue,
+            vendas_hoje: todaySales.length,
+            vendas_hoje_aprovadas: todayApproved.length,
+            taxa_conversao: conversionRate,
+            preco_unitario: PRICE_PER_SALE,
+            metodos_pagamento: paymentMethods,
+            grafico_7dias: last7Days,
+            grafico_30dias: last30Days
+        },
+        sales: salesDB.slice().reverse() // Mais recentes primeiro
+    });
+});
+
+// Aprovar manualmente uma venda rejeitada
+app.post('/api/admin/approve', adminAuth, async (req, res) => {
+    const { saleId } = req.body;
+    if (!saleId) {
+        return res.status(400).json({ ok: false, reason: 'ID da venda não fornecido.' });
+    }
+
+    const saleIndex = salesDB.findIndex(s => s.id === saleId);
+    if (saleIndex === -1) {
+        return res.status(404).json({ ok: false, reason: 'Venda não encontrada.' });
+    }
+
+    const sale = salesDB[saleIndex];
+    if (sale.status === 'aprovado' || sale.status === 'aprovado_manual') {
+        return res.status(400).json({ ok: false, reason: 'Esta venda já foi aprovada.' });
+    }
+
+    try {
+        // Gerar token e PDF
+        const token = generateToken(sale.nome, sale.whatsapp);
+        const base64Pdf = await generateEbookPDF(sale.nome, sale.whatsapp, token);
+
+        // Mover comprovativo de rejeitados para aprovados
+        if (sale.comprovativo) {
+            const oldPath = path.join(rejectedDir, sale.comprovativo);
+            const newPath = path.join(approvedDir, sale.comprovativo);
+            try {
+                if (fs.existsSync(oldPath)) {
+                    fs.copyFileSync(oldPath, newPath);
+                    fs.unlinkSync(oldPath);
+                }
+            } catch(e) { console.error('Erro ao mover comprovativo:', e.message); }
+        }
+
+        // Atualizar registo
+        salesDB[saleIndex].status = 'aprovado_manual';
+        salesDB[saleIndex].motivo = 'Aprovado manualmente pelo administrador';
+        salesDB[saleIndex].token = token;
+        salesDB[saleIndex].data_aprovacao_manual = new Date().toISOString();
+        saveSalesDB();
+
+        // Registar hash se houver comprovativo (para prevenir reutilização)
+        if (sale.comprovativo) {
+            const approvedPath = path.join(approvedDir, sale.comprovativo);
+            if (fs.existsSync(approvedPath)) {
+                const hash = getFileHash(approvedPath);
+                usedReceipts.add(hash);
+                fs.writeFileSync(DB_FILE, JSON.stringify([...usedReceipts]));
+            }
+        }
+
+        return res.json({
+            ok: true,
+            token: token,
+            pdfBase64: base64Pdf,
+            filename: `Como_Fazer_o_Cliente_Sentir_que_Precisa_de_Voce_${sale.nome.replace(/\s+/g, '_')}.pdf`,
+            message: `Venda de ${sale.nome} aprovada com sucesso!`
+        });
+
+    } catch(error) {
+        console.error('Erro na aprovação manual:', error);
+        return res.status(500).json({ ok: false, reason: 'Erro ao gerar o PDF.' });
+    }
+});
+
+// Eliminar uma venda do registo
+app.delete('/api/admin/sale/:saleId', adminAuth, (req, res) => {
+    const { saleId } = req.params;
+    const saleIndex = salesDB.findIndex(s => s.id === saleId);
+    if (saleIndex === -1) {
+        return res.status(404).json({ ok: false, reason: 'Venda não encontrada.' });
+    }
+
+    // Eliminar ficheiro do comprovativo se existir
+    const sale = salesDB[saleIndex];
+    if (sale.comprovativo) {
+        const pathApproved = path.join(approvedDir, sale.comprovativo);
+        const pathRejected = path.join(rejectedDir, sale.comprovativo);
+        try { if (fs.existsSync(pathApproved)) fs.unlinkSync(pathApproved); } catch(e) {}
+        try { if (fs.existsSync(pathRejected)) fs.unlinkSync(pathRejected); } catch(e) {}
+    }
+
+    salesDB.splice(saleIndex, 1);
+    saveSalesDB();
+
+    return res.json({ ok: true, message: 'Venda eliminada com sucesso.' });
+});
+
+// Servir imagens de comprovativos (protegido)
+app.get('/api/admin/receipt/:folder/:filename', adminAuth, (req, res) => {
+    const { folder, filename } = req.params;
+    let dir;
+    if (folder === 'aprovados') dir = approvedDir;
+    else if (folder === 'rejeitados') dir = rejectedDir;
+    else return res.status(400).json({ ok: false, reason: 'Pasta inválida.' });
+
+    const filePath = path.join(dir, filename);
+    if (!fs.existsSync(filePath)) {
+        return res.status(404).json({ ok: false, reason: 'Ficheiro não encontrado.' });
+    }
+    res.sendFile(filePath);
+});
+
+// ==================== INICIAR SERVIDOR ====================
 app.listen(port, () => {
     console.log(`Secured backend running on http://localhost:${port}`);
+    console.log(`📊 Admin Panel: Use /admin.html with password to access dashboard`);
+    console.log(`💾 Sales database: ${salesDB.length} records loaded`);
 });
