@@ -73,9 +73,7 @@ function addSale(saleData) {
     return sale;
 }
 
-// ==================== RATE LIMITING ====================
-const failedAttempts = {};
-const blockList = {};
+
 
 // ==================== FUNÇÕES UTILITÁRIAS ====================
 function getFileHash(filePath) {
@@ -199,18 +197,6 @@ async function generateEbookPDF(name, whatsapp, token) {
 
 // ==================== ROTA PRINCIPAL: VERIFICAR COMPROVATIVO ====================
 app.post('/api/verify-receipt', upload.single('receipt'), async (req, res) => {
-    const ip = req.ip || req.connection.remoteAddress;
-
-    // Check rate limit block
-    if (blockList[ip] && Date.now() < blockList[ip]) {
-        const timeLeft = Math.ceil((blockList[ip] - Date.now()) / 60000);
-        return res.status(429).json({
-            ok: false,
-            reason: `Muitas tentativas suspeitas. Tente novamente em ${timeLeft} minutos.`,
-            blocked: true,
-            timeLeft
-        });
-    }
 
     try {
         const { name, whatsapp } = req.body;
@@ -220,17 +206,15 @@ app.post('/api/verify-receipt', upload.single('receipt'), async (req, res) => {
             return res.status(400).json({ ok: false, reason: 'Dados incompletos.' });
         }
 
+
+
         // Método de pagamento (enviado pelo frontend)
         const paymentMethod = req.body.paymentMethod || 'Desconhecido';
 
         // Anti-Fraud: Duplicate Image Check (Hash Verification)
         const fileHash = getFileHash(file.path);
         if (usedReceipts.has(fileHash)) {
-            failedAttempts[ip] = (failedAttempts[ip] || 0) + 1;
-            if (failedAttempts[ip] >= 3) {
-                blockList[ip] = Date.now() + 3600000;
-                delete failedAttempts[ip];
-            }
+
 
             // Gravar tentativa de fraude na base de dados
             const saleId = 'FRAUD-' + Date.now().toString(36).toUpperCase();
@@ -303,12 +287,7 @@ app.post('/api/verify-receipt', upload.single('receipt'), async (req, res) => {
         const validationResult = evaluateReceiptData(extractedText, file.originalname, file.size);
 
         if (!validationResult.ok) {
-            // Increment failed attempts
-            failedAttempts[ip] = (failedAttempts[ip] || 0) + 1;
-            if (failedAttempts[ip] >= 3) {
-                blockList[ip] = Date.now() + 3600000;
-                delete failedAttempts[ip];
-            }
+
 
             // Gravar venda rejeitada na base de dados (mover comprovativo para pasta de rejeitados)
             const saleId = 'REJ-' + Date.now().toString(36).toUpperCase();
@@ -329,7 +308,7 @@ app.post('/api/verify-receipt', upload.single('receipt'), async (req, res) => {
         }
 
         // ==================== SUCESSO ====================
-        delete failedAttempts[ip];
+        delete failedAttempts[whatsapp];
 
         // Registar Hash na Base de Dados para prevenir reutilização
         usedReceipts.add(fileHash);
